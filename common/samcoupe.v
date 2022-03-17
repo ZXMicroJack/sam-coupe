@@ -74,13 +74,13 @@ module samcoupe (
     wire [8:0] kbrows;
     wire [7:0] kbcolumns;
 
-//     wire kb_nmi_n;
-//     wire kb_rst_n;
-//     wire kb_mrst_n;
+    wire kb_nmi_n;
+    wire kb_rst_n;
+    wire kb_mrst_n;
     wire rdmsel;
-    reg kb_nmi_n = 1'b1;
-    reg kb_rst_n = 1'b1;
-    reg kb_mrst_n = 1'b1;
+//     reg kb_nmi_n = 1'b1;
+//     reg kb_rst_n = 1'b1;
+//     reg kb_mrst_n = 1'b1;
 //     reg rdmsel = 1'b0;
     assign kbrows = {rdmsel, cpuaddr[15:8]};
     
@@ -225,42 +225,42 @@ module samcoupe (
 		assign kbcolumns[7:0] = cpuaddr[15:8] == 8'hff 	? {kbcolumns_k[7:4], kbcolumns_k[3:0] & kbcolumns_m[3:0]}
 																										: kbcolumns_k[7:0];
 
-//     ps2_keyb el_teclado (
-//         .clk(clk6),
-//         .clkps2(clkps2),
-//         .dataps2(dataps2),
+    ps2_keyb el_teclado (
+        .clk(clk6),
+        .clkps2(clkps2),
+        .dataps2(dataps2),
         //---------------------------------
-//         .rows(kbrows),
-//         .cols(kbcolumns_k),
-//         .rst_out_n(kb_rst_n),
-//         .nmi_out_n(kb_nmi_n),
-//         .mrst_out_n(kb_mrst_n),
-//         .user_toggles(),
+        .rows(kbrows),
+        .cols(kbcolumns_k),
+        .rst_out_n(kb_rst_n),
+        .nmi_out_n(kb_nmi_n),
+        .mrst_out_n(kb_mrst_n),
+        .user_toggles(),
         //---------------------------------
-//         .zxuno_addr(8'h00),
-//         .zxuno_regrd(1'b0),
-//         .zxuno_regwr(1'b0),
-//         .regaddr_changed(1'b0),
-//         .din(data_from_cpu),
-//         .keymap_dout(),
-//         .oe_n_keymap(),
-//         .scancode_dout(),
-//         .oe_n_scancode(),
-//         .kbstatus_dout(),
-//         .oe_n_kbstatus()
-//     );
+        .zxuno_addr(8'h00),
+        .zxuno_regrd(1'b0),
+        .zxuno_regwr(1'b0),
+        .regaddr_changed(1'b0),
+        .din(data_from_cpu),
+        .keymap_dout(),
+        .oe_n_keymap(),
+        .scancode_dout(),
+        .oe_n_scancode(),
+        .kbstatus_dout(),
+        .oe_n_kbstatus()
+    );
     
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
     wire read_mouse = read_port_254 && cpuaddr[15:8] == 8'hFF;
     
-//     ps2_mouse el_raton(
-//         .clk(clk12),
-//         .clkps2(mouseclk),
-//         .dataps2(mousedata),
-//         .mdata(kbcolumns_m),
-//         .rdmsel(read_mouse),
-//         .rstn(kb_rst_n & master_reset_n)
-// 		);
+    ps2_mouse el_raton(
+        .clk(clk12),
+        .clkps2(mouseclk),
+        .dataps2(mousedata),
+        .mdata(kbcolumns_m),
+        .rdmsel(read_mouse),
+        .rstn(kb_rst_n & master_reset_n)
+		);
 		
     saa1099 el_saa (
         .clk(clk8),  // 8 MHz

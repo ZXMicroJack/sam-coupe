@@ -57,12 +57,12 @@ module scancode_to_sam (
     end
         
     // El gran mapa de teclado y sus registros de acceso
-    reg [7:0] keymap[0:16383];  // 16K x 8 bits
+//     reg [7:0] keymap[0:16383];  // 16K x 8 bits
     reg [13:0] addr = 14'h0000;
     reg [13:0] cpuaddr = 14'h0000;  // Dirección E/S desde la CPU. Se autoincrementa en cada acceso
-    initial begin
-        $readmemh ("../keymaps/keyb_es_hex.txt", keymap);
-    end
+//     initial begin
+//         $readmemh ("../keymaps/keyb_es_hex.txt", keymap);
+//     end
     
     reg [3:0] keyrow1 = 4'h0;
     reg [7:0] keycol1 = 8'h00;
@@ -115,6 +115,9 @@ module scancode_to_sam (
         
     reg [3:0] state = CLEANMATRIX;
     reg key_is_pending = 1'b0;
+    wire[7:0] keymap_data;
+    
+    keymap keymap_inst(.addr(addr), .data(keymap_data));
     
     always @(posedge clk) begin
         if (scan_received == 1'b1)
@@ -147,22 +150,26 @@ module scancode_to_sam (
                         state <= CPUTIME;
                 end
                 ADDR0PUT: begin
-                    {keyrow1,keycol1[7:4]} <= keymap[addr];
+//                     {keyrow1,keycol1[7:4]} <= keymap[addr];
+                    {keyrow1,keycol1[7:4]} <= keymap_data;
                     addr <= {modifiers, extended, scan, 2'b01};
                     state <= ADDR1PUT;
                 end
                 ADDR1PUT: begin
-                    {keycol1[3:0],keyrow2} <= keymap[addr];
+//                     {keycol1[3:0],keyrow2} <= keymap[addr];
+                    {keycol1[3:0],keyrow2} <= keymap_data;
                     addr <= {modifiers, extended, scan, 2'b10};
                     state <= ADDR2PUT;
                 end
                 ADDR2PUT: begin
-                    {keycol2} <= keymap[addr];
+//                     {keycol2} <= keymap[addr];
+                    {keycol2} <= keymap_data;
                     addr <= {modifiers, extended, scan, 2'b11};
                     state <= ADDR3PUT;
                 end
                 ADDR3PUT: begin
-                    {signalstate,keymodifiers,togglestate} <= keymap[addr];
+//                     {signalstate,keymodifiers,togglestate} <= keymap[addr];
+                    {signalstate,keymodifiers,togglestate} <= keymap_data;
                     state <= TRANSLATE1;
                 end
                 TRANSLATE1: begin
@@ -235,11 +242,12 @@ module scancode_to_sam (
                         state <= IDLE;
                 end
                 CPUREAD: begin   // CPU wants to read from keymap
-                    dout <= keymap[addr];
+//                     dout <= keymap[addr];
+                    dout <= keymap_data;
                     state <= CPUINCADD;
                 end
                 CPUWRITE: begin
-                    keymap[addr] <= din;
+//                     keymap[addr] <= din;
                     state <= CPUINCADD;
                 end
                 CPUINCADD: begin
