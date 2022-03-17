@@ -56,14 +56,15 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     input wire[31:0] disk_cr,
     input wire disk_data_clkout,
     input wire disk_data_clkin,
-    input wire[1:0] disk_wp,
-    
-    input wire[31:0] host_bootdata,
-    input wire host_bootdata_req,
-    output wire host_bootdata_ack,
-    input wire host_reset,
-    output wire rom_initialised
-    ,output reg[31:0] romaddr_dbg
+    input wire[1:0] disk_wp
+//     ,
+//     
+//     input wire[31:0] host_bootdata,
+//     input wire host_bootdata_req,
+//     output wire host_bootdata_ack,
+//     input wire host_reset,
+//     output wire rom_initialised
+//     ,output reg[31:0] romaddr_dbg
     );
     
     // ROM memory
@@ -80,10 +81,15 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     // Keyboard
     wire [8:0] kbrows;
     wire [7:0] kbcolumns;
-    wire kb_nmi_n;
-    wire kb_rst_n;
-    wire kb_mrst_n;
+
+//     wire kb_nmi_n;
+//     wire kb_rst_n;
+//     wire kb_mrst_n;
     wire rdmsel;
+    reg kb_nmi_n = 1'b1;
+    reg kb_rst_n = 1'b1;
+    reg kb_mrst_n = 1'b1;
+//     reg rdmsel = 1'b0;
     assign kbrows = {rdmsel, cpuaddr[15:8]};
     
     // CPU signals
@@ -100,11 +106,11 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     // ROM signals
 //     assign romaddr_dbg[14:0] = romaddr[14:0];
     
-    always @(negedge rom_oe_n)
-      romaddr_dbg[14:0] <= romaddr[14:0];
-
-    always @(posedge rom_oe_n)
-      romaddr_dbg[31:24] <= data_from_rom[7:0];
+//     always @(negedge rom_oe_n)
+//       romaddr_dbg[14:0] <= romaddr[14:0];
+// 
+//     always @(posedge rom_oe_n)
+//       romaddr_dbg[31:24] <= data_from_rom[7:0];
       
     assign romaddr = {cpuaddr[15], cpuaddr[13:0]};
     
@@ -126,22 +132,21 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     // bootrom loading
 //     wire host_reset;
 //     wire rom_initialised;
-    wire[7:0] romwrite_data;
-    wire romwrite_wr;
-    wire[18:0] romwrite_addr;
-
-    bootloader #(.ROM_LOCATION(19'h40000 ), .ROM_END(16'h8000)) bootloader_inst (
-      .clk(clk50m),
-//       .clk(clk6),  
-      .host_bootdata(host_bootdata),
-      .host_bootdata_ack(host_bootdata_ack),
-      .host_bootdata_req(host_bootdata_req),
-      .host_reset(host_reset),
-      .romwrite_data(romwrite_data),
-      .romwrite_wr(romwrite_wr),
-      .romwrite_addr(romwrite_addr),
-      .rom_initialised(rom_initialised)
-    );
+//     wire[7:0] romwrite_data;
+//     wire romwrite_wr;
+//     wire[18:0] romwrite_addr;
+// 
+//     bootloader #(.ROM_LOCATION(19'h40000 ), .ROM_END(16'h8000)) bootloader_inst (
+//       .clk(clk50m),
+//       .host_bootdata(host_bootdata),
+//       .host_bootdata_ack(host_bootdata_ack),
+//       .host_bootdata_req(host_bootdata_req),
+//       .host_reset(host_reset),
+//       .romwrite_data(romwrite_data),
+//       .romwrite_wr(romwrite_wr),
+//       .romwrite_addr(romwrite_addr),
+//       .rom_initialised(rom_initialised)
+//     );
     
     // MUX from memory/devices to Z80 data bus
 // generate if (ROM_IN_RAM == 1) begin
@@ -171,7 +176,8 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
       .A(cpuaddr),
       .dout(data_from_cpu),
 
-      .reset_n(kb_rst_n & master_reset_n & rom_initialised),
+//       .reset_n(kb_rst_n & master_reset_n & rom_initialised),
+      .reset_n(kb_rst_n & master_reset_n),
       .clk(clk6),
       .wait_n(wait_n),
       .int_n(int_n),
@@ -222,7 +228,7 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     );
  
  generate if (ROM_IN_RAM == 1) begin
-    ram_dual_port_turnos ram_512k (
+   ram_dual_port_turnos2 ram_512k (
         .clk(1'b0 /*clk24*/),
         .whichturn(asic_is_using_ram),
         .vramaddr(vramaddr),
@@ -234,18 +240,20 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
         // Actual interface with SRAM
         .sram_a(sram_addr),
         .sram_we_n(sram_we_n),
-        .sram_d(sram_data),
+        .sram_d(sram_data)
+//         ,
         // bootrom
-        .romwrite_data(romwrite_data),
-        .romwrite_wr(romwrite_wr),
-        .romwrite_addr(romwrite_addr),
+//         .romwrite_data(romwrite_data),
+//         .romwrite_wr(romwrite_wr),
+//         .romwrite_addr(romwrite_addr),
         // rom
-        .romaddr(romaddr),
-        .data_from_rom(data_from_rom),
-        .rom_oe_n(rom_oe_n),
-        .rom_initialised(rom_initialised)
+//         .romaddr(romaddr),
+//         .data_from_rom(data_from_rom),
+//         .rom_oe_n(rom_oe_n),
+//         .rom_initialised(rom_initialised)
     );
- end else begin
+
+end else begin
     rom rom_32k (
         .clk(clk24),
         .a(romaddr),
@@ -289,43 +297,42 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
 		assign kbcolumns[7:0] = cpuaddr[15:8] == 8'hff 	? {kbcolumns_k[7:4], kbcolumns_k[3:0] & kbcolumns_m[3:0]}
 																										: kbcolumns_k[7:0];
 
-    ps2_keyb el_teclado (
-        .clk(clk6),
-        .clkps2(clkps2),
-        .dataps2(dataps2),
+//     ps2_keyb el_teclado (
+//         .clk(clk6),
+//         .clkps2(clkps2),
+//         .dataps2(dataps2),
         //---------------------------------
-        .rows(kbrows),
-        .cols(kbcolumns_k),
-        .rst_out_n(kb_rst_n),
-        .nmi_out_n(kb_nmi_n),
-        .mrst_out_n(kb_mrst_n),
-        .user_toggles(),
+//         .rows(kbrows),
+//         .cols(kbcolumns_k),
+//         .rst_out_n(kb_rst_n),
+//         .nmi_out_n(kb_nmi_n),
+//         .mrst_out_n(kb_mrst_n),
+//         .user_toggles(),
         //---------------------------------
-        .zxuno_addr(8'h00),
-        .zxuno_regrd(1'b0),
-        .zxuno_regwr(1'b0),
-        .regaddr_changed(1'b0),
-        .din(data_from_cpu),
-        .keymap_dout(),
-        .oe_n_keymap(),
-        .scancode_dout(),
-        .oe_n_scancode(),
-        .kbstatus_dout(),
-        .oe_n_kbstatus()
-    );
+//         .zxuno_addr(8'h00),
+//         .zxuno_regrd(1'b0),
+//         .zxuno_regwr(1'b0),
+//         .regaddr_changed(1'b0),
+//         .din(data_from_cpu),
+//         .keymap_dout(),
+//         .oe_n_keymap(),
+//         .scancode_dout(),
+//         .oe_n_scancode(),
+//         .kbstatus_dout(),
+//         .oe_n_kbstatus()
+//     );
     
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
     wire read_mouse = read_port_254 && cpuaddr[15:8] == 8'hFF;
     
-    ps2_mouse el_raton(
-        .clk(clk12),
-        .clkps2(mouseclk),
-        .dataps2(mousedata),
-        .mdata(kbcolumns_m),
-        .rdmsel(read_mouse),
-        .rstn(kb_rst_n & master_reset_n)
-//         ,.tp(tp)
-		);
+//     ps2_mouse el_raton(
+//         .clk(clk12),
+//         .clkps2(mouseclk),
+//         .dataps2(mousedata),
+//         .mdata(kbcolumns_m),
+//         .rdmsel(read_mouse),
+//         .rstn(kb_rst_n & master_reset_n)
+// 		);
 		
     saa1099 el_saa (
         .clk(clk8),  // 8 MHz

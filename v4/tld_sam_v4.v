@@ -85,8 +85,8 @@ module tld_sam_v4 (
   wire[31:0] disk_cr;
   wire disk_data_clkout, disk_data_clkin;
   
-  wire[31:0] romaddr_dbg;
-  wire[31:0] debug = romaddr_dbg[31:0];
+//   wire[31:0] romaddr_dbg;
+//   wire[31:0] debug = romaddr_dbg[31:0];
 
     assign stdn = 1'b0;  // fijar norma PAL
 	assign stdnb = 1'b1; // y conectamos reloj PAL
@@ -119,7 +119,7 @@ module tld_sam_v4 (
         .CLK_OUT5           (clk50m)  // el resto de stuffo
     );
 
-    samcoupe # (.ROM_IN_RAM(1)) maquina (
+    samcoupe # (.ROM_IN_RAM(0)) maquina (
         .clk50m(clk50m),
         .clk24(clk24),
         .clk12(clk12),
@@ -146,13 +146,14 @@ module tld_sam_v4 (
         // SRAM external interface
         .sram_addr(sram_addr_from_sam),
         .sram_data(sram_data),
-        .sram_we_n(sram_we_n_from_sam),
+        .sram_we_n(sram_we_n_from_sam)
+//         ,
         // host boot rom
-        .host_bootdata(host_bootdata),
-        .host_bootdata_req(host_bootdata_req),
-        .host_bootdata_ack(host_bootdata_ack),
-        .rom_initialised(rom_initialised)
-        ,.romaddr_dbg(romaddr_dbg)
+//         .host_bootdata(host_bootdata),
+//         .host_bootdata_req(host_bootdata_req),
+//         .host_bootdata_ack(host_bootdata_ack),
+//         .rom_initialised(rom_initialised)
+//         ,.romaddr_dbg(romaddr_dbg)
   );
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;
@@ -280,18 +281,20 @@ module tld_sam_v4 (
 
       .tape_hreq(tape_hreq),
       .tape_busy(tape_busy),
-      .cpu_reset(1'b0), //TODO
+      .cpu_reset(1'b0)
+//       , //TODO
 
       // init bootrom interface
-      .host_bootdata(host_bootdata),
+ /*     .host_bootdata(host_bootdata),
       .host_bootdata_req(host_bootdata_req),
       .host_bootdata_ack(host_bootdata_ack)
       
       ,.debug(debug)
-      
+ */     
       // jtag uart interface
 //       .juart_rx(juart_rx),
 //       .juart_tx(juart_tx)
+      ,.debug(0)
    );
 
    wire[3:0] vga_r_o;
