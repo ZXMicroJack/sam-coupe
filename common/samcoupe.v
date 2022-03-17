@@ -20,7 +20,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module samcoupe#(parameter ROM_IN_RAM = 0) (
+module samcoupe (
     input wire clk50m,
     input wire clk24,
     input wire clk12,
@@ -57,14 +57,6 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     input wire disk_data_clkout,
     input wire disk_data_clkin,
     input wire[1:0] disk_wp
-//     ,
-//     
-//     input wire[31:0] host_bootdata,
-//     input wire host_bootdata_req,
-//     output wire host_bootdata_ack,
-//     input wire host_reset,
-//     output wire rom_initialised
-//     ,output reg[31:0] romaddr_dbg
     );
     
     // ROM memory
@@ -104,14 +96,6 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     wire rom_oe_n;
     
     // ROM signals
-//     assign romaddr_dbg[14:0] = romaddr[14:0];
-    
-//     always @(negedge rom_oe_n)
-//       romaddr_dbg[14:0] <= romaddr[14:0];
-// 
-//     always @(posedge rom_oe_n)
-//       romaddr_dbg[31:24] <= data_from_rom[7:0];
-      
     assign romaddr = {cpuaddr[15], cpuaddr[13:0]};
     
     // RAM signals
@@ -128,41 +112,14 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
     wire disk2_n;
     wire disk1_oe = !disk1_n && !rd_n;
     wire disk2_oe = !disk2_n && !rd_n;
-
-    // bootrom loading
-//     wire host_reset;
-//     wire rom_initialised;
-//     wire[7:0] romwrite_data;
-//     wire romwrite_wr;
-//     wire[18:0] romwrite_addr;
-// 
-//     bootloader #(.ROM_LOCATION(19'h40000 ), .ROM_END(16'h8000)) bootloader_inst (
-//       .clk(clk50m),
-//       .host_bootdata(host_bootdata),
-//       .host_bootdata_ack(host_bootdata_ack),
-//       .host_bootdata_req(host_bootdata_req),
-//       .host_reset(host_reset),
-//       .romwrite_data(romwrite_data),
-//       .romwrite_wr(romwrite_wr),
-//       .romwrite_addr(romwrite_addr),
-//       .rom_initialised(rom_initialised)
-//     );
     
     // MUX from memory/devices to Z80 data bus
-// generate if (ROM_IN_RAM == 1) begin
-//     assign data_to_cpu = (disk2_oe == 1'b1)? wd1770_dout2 : 
-//                          (disk1_oe == 1'b1)? wd1770_dout :
-//                          (rom_oe_n == 1'b0 || ram_oe_n == 1'b0)?  data_from_ram :
-//                          (asic_oe_n == 1'b0)? data_from_asic :
-//                          8'hFF;
-// end else begin
     assign data_to_cpu = (disk2_oe == 1'b1)? wd1770_dout2 : 
                          (disk1_oe == 1'b1)? wd1770_dout :
                          (rom_oe_n == 1'b0)?  data_from_rom :
                          (ram_oe_n == 1'b0)?  data_from_ram :
                          (asic_oe_n == 1'b0)? data_from_asic :
                          8'hFF;
-// end endgenerate;
 
     tv80a el_z80 (
       .m1_n(m1_n),
@@ -176,7 +133,6 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
       .A(cpuaddr),
       .dout(data_from_cpu),
 
-//       .reset_n(kb_rst_n & master_reset_n & rom_initialised),
       .reset_n(kb_rst_n & master_reset_n),
       .clk(clk6),
       .wait_n(wait_n),
@@ -227,33 +183,6 @@ module samcoupe#(parameter ROM_IN_RAM = 0) (
         .int_n(int_n)
     );
  
- generate if (ROM_IN_RAM == 1) begin
-   ram_dual_port_turnos2 ram_512k (
-        .clk(1'b0 /*clk24*/),
-        .whichturn(asic_is_using_ram),
-        .vramaddr(vramaddr),
-        .cpuramaddr(cpuramaddr),
-        .cpu_we_n(ram_we_n),
-        .data_from_cpu(data_from_cpu),
-        .data_to_asic(data_to_asic),
-        .data_to_cpu(data_from_ram),
-        // Actual interface with SRAM
-        .sram_a(sram_addr),
-        .sram_we_n(sram_we_n),
-        .sram_d(sram_data)
-//         ,
-        // bootrom
-//         .romwrite_data(romwrite_data),
-//         .romwrite_wr(romwrite_wr),
-//         .romwrite_addr(romwrite_addr),
-        // rom
-//         .romaddr(romaddr),
-//         .data_from_rom(data_from_rom),
-//         .rom_oe_n(rom_oe_n),
-//         .rom_initialised(rom_initialised)
-    );
-
-end else begin
     rom rom_32k (
         .clk(clk24),
         .a(romaddr),
@@ -274,7 +203,6 @@ end else begin
         .sram_we_n(sram_we_n),
         .sram_d(sram_data)
     );
-  end endgenerate;
 //    ram_dual_port ram_512k (
 //        .clk(clk24),
 //        .whichturn(asic_is_using_ram),
