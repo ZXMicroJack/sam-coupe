@@ -472,9 +472,9 @@ int main()
     // Create mapping
     FILE *f = fopen("keymap.v", "w");
     if (f) {
-      fprintf(f, "module keymap(input wire[15:0] addr, output wire data[7:0]);\n\nalways @* begin\n  case(addr[15:0])\n");
+      fprintf(f, "module keymap(input wire[13:0] addr, output reg[7:0] data);\n\nalways @* begin\n  case(addr[13:0])\n");
       for (int i=0; i<sizeof rom; i++) {
-        if (rom[i]) fprintf(f, "    16'h%04X: data = 8'h%02X;\n", i, rom[i]);
+        if (rom[i]) fprintf(f, "    14'h%04X: data = 8'h%02X;\n", i, rom[i]);
       }
       fprintf(f, "    default: data = 8'h00;\n");
       fprintf(f, "  endcase;\nend\n\nendmodule\n");

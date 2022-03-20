@@ -22,8 +22,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 module ps2_keyb(
     input wire clk,
-    inout wire clkps2,
-    inout wire dataps2,
+    input wire clkps2,
+    input wire dataps2,
     //---------------------------------
     input wire [8:0] rows,
     output wire [7:0] cols,
@@ -43,6 +43,7 @@ module ps2_keyb(
     output wire oe_n_scancode,
     output reg [7:0] kbstatus_dout,
     output wire oe_n_kbstatus
+//     ,output wire testled
     );
 
     parameter SCANCODE = 8'h04;
@@ -83,10 +84,11 @@ module ps2_keyb(
         end
     end        
 
+//     assign testled = nueva_tecla;
     ps2_port lectura_de_teclado (
         .clk(clk),
         .enable_rcv(~ps2busy),
-        .kb_or_mouse(1'b0),
+        .kb_or_mouse(1'b1),
         .ps2clk_ext(clkps2),
         .ps2data_ext(dataps2),
         .kb_interrupt(nueva_tecla),
@@ -95,7 +97,7 @@ module ps2_keyb(
         .extended(extended)
     );
 
-    scancode_to_sam traductor (
+    scancode_to_sam2 traductor (
         .clk(clk),
         .rst(1'b0),
         .scan_received(nueva_tecla),
@@ -116,23 +118,23 @@ module ps2_keyb(
         .rewind(regaddr_changed == 1'b1 && zxuno_addr == KEYMAP)
         );
 
-    keyboard_pressed_status comprueba_teclado_limpio (
-        .clk(clk),
-        .rst(1'b0),
-        .scan_received(nueva_tecla),
-        .scancode(kbcode),
-        .extended(extended),
-        .released(released),
-        .kbclean(teclado_limpio)
-    );
+//     keyboard_pressed_status comprueba_teclado_limpio (
+//         .clk(clk),
+//         .rst(1'b0),
+//         .scan_received(nueva_tecla),
+//         .scancode(kbcode),
+//         .extended(extended),
+//         .released(released),
+//         .kbclean(teclado_limpio)
+//     );
 
-    ps2_host_to_kb escritura_a_teclado (
-        .clk(clk),
-        .ps2clk_ext(clkps2),
-        .ps2data_ext(dataps2),
-        .data(din),
-        .dataload(zxuno_addr == SCANCODE && zxuno_regwr== 1'b1),
-        .ps2busy(ps2busy),
-        .ps2error(kberror)
-    );
+//     ps2_host_to_kb escritura_a_teclado (
+//         .clk(clk),
+//         .ps2clk_ext(clkps2),
+//         .ps2data_ext(dataps2),
+//         .data(din),
+//         .dataload(zxuno_addr == SCANCODE && zxuno_regwr== 1'b1),
+//         .ps2busy(ps2busy),
+//         .ps2error(kberror)
+//     );
 endmodule

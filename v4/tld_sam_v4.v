@@ -49,7 +49,7 @@ module tld_sam_v4 (
     output sd_clk,
     output sd_mosi,
     input wire sd_miso
-//     ,output reg testled
+//     ,output wire testled
     );
 
     // Interface with RAM
@@ -75,10 +75,10 @@ module tld_sam_v4 (
 
     assign stdn = 1'b0;  // fijar norma PAL
 	assign stdnb = 1'b1; // y conectamos reloj PAL
-  wire ear_in_sc;
+  wire ear_in_sc; 
   wire ear_in = ear_in_sc ^ ear;
     
-    wire clk24, clk12, clk6, clk8, clk50m;
+    wire clk24, clk12, clk6, clk8, clk50m, clk6m;
 
     reg [7:0] poweron_reset = 8'h00;
     reg [1:0] scandoubler_ctrl = 2'b00;
@@ -97,7 +97,8 @@ module tld_sam_v4 (
         .CLK_OUT2           (clk12),  // ASIC
         .CLK_OUT3           (clk6),   // CPU y teclado PS/2
         .CLK_OUT4           (clk8),   // SAA1099 y DAC
-        .CLK_OUT5           (clk50m)  // el resto de stuffo
+        .CLK_OUT5           (clk50m),  // el resto de stuffo
+        .CLK_OUT6           (clk6m)   // para CPU ctrl-module
     );
 
     samcoupe maquina (
@@ -128,6 +129,7 @@ module tld_sam_v4 (
         .sram_addr(sram_addr_from_sam),
         .sram_data(sram_data),
         .sram_we_n(sram_we_n_from_sam)
+//         ,.testled(testled)
   );
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;
@@ -193,7 +195,7 @@ module tld_sam_v4 (
   
 
    CtrlModule MyCtrlModule (
-     .clk(clk6),	
+     .clk(clk6m),	
      .clk26(clk50m),
      .reset_n(1'b1),
 

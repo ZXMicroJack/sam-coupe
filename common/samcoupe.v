@@ -56,7 +56,8 @@ module samcoupe (
     input wire[31:0] disk_cr,
     input wire disk_data_clkout,
     input wire disk_data_clkin,
-    input wire[1:0] disk_wp
+    input wire[1:0] disk_wp,
+    output wire testled
     );
     
     // ROM memory
@@ -168,7 +169,8 @@ module samcoupe (
         .mic(mic),
         .beep(beep),
         // keyboard I/O
-        .keyboard(kbcolumns),
+//         .keyboard(kbcolumns),
+        .keyboard(kbcolumns_k),
         .rdmsel(rdmsel),
         // disk I/O
         .disc1_n(disk1_n),
@@ -225,30 +227,52 @@ module samcoupe (
 		assign kbcolumns[7:0] = cpuaddr[15:8] == 8'hff 	? {kbcolumns_k[7:4], kbcolumns_k[3:0] & kbcolumns_m[3:0]}
 																										: kbcolumns_k[7:0];
 
-    ps2_keyb el_teclado (
-        .clk(clk6),
-        .clkps2(clkps2),
-        .dataps2(dataps2),
-        //---------------------------------
-        .rows(kbrows),
-        .cols(kbcolumns_k),
-        .rst_out_n(kb_rst_n),
-        .nmi_out_n(kb_nmi_n),
-        .mrst_out_n(kb_mrst_n),
-        .user_toggles(),
-        //---------------------------------
-        .zxuno_addr(8'h00),
-        .zxuno_regrd(1'b0),
-        .zxuno_regwr(1'b0),
-        .regaddr_changed(1'b0),
-        .din(data_from_cpu),
-        .keymap_dout(),
-        .oe_n_keymap(),
-        .scancode_dout(),
-        .oe_n_scancode(),
-        .kbstatus_dout(),
-        .oe_n_kbstatus()
+    wire[7:0] scancode;
+    wire scancode_valid;
+		ps2 ps2_keyb(
+      .kbd_clk(clkps2),
+      .kbd_data(dataps2),
+      .kbd_key(scancode),
+      .kbd_key_valid(scancode_valid),
+      .clk(clk50m)
+      );
+      
+      
+    scancode_to_sam3 scan_inst(
+      .scan_received(scancode_valid),
+      .scan(scancode),
+      .sam_row(kbrows),
+      .sam_col(kbcolumns_k),
+      .user_reset(kb_rst_n),
+      .master_reset(kb_mrst_n),
+      .user_nmi(kb_nmi_n)
     );
+
+//     ps2_keyb el_teclado (
+//         .clk(clk6),
+//         .clkps2(clkps2),
+//         .dataps2(dataps2),
+//         ---------------------------------
+//         .rows(kbrows),
+//         .cols(kbcolumns_k),
+//         .rst_out_n(kb_rst_n),
+//         .nmi_out_n(kb_nmi_n),
+//         .mrst_out_n(kb_mrst_n),
+//         .user_toggles(),
+//         ---------------------------------
+//         .zxuno_addr(8'h00),
+//         .zxuno_regrd(1'b0),
+//         .zxuno_regwr(1'b0),
+//         .regaddr_changed(1'b0),
+//         .din(data_from_cpu),
+//         .keymap_dout(),
+//         .oe_n_keymap(),
+//         .scancode_dout(),
+//         .oe_n_scancode(),
+//         .kbstatus_dout(),
+//         .oe_n_kbstatus()
+//         ,.testled(testled)
+//     );
     
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
     wire read_mouse = read_port_254 && cpuaddr[15:8] == 8'hFF;
