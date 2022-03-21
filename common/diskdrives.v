@@ -1,4 +1,4 @@
-module diskdrives(
+module diskdrives#(parameter NR_DISK = 2) (
 	// from/to ctrl-module
 	input wire[7:0] disk_data_in,
 	output wire[7:0] disk_data_out,
@@ -62,6 +62,7 @@ module diskdrives(
 		.side(cpuaddr[2])
 		);
 
+	generate if (NR_DISK == 2) begin
 	wd1770 wd1770_inst2(
 		.dd0in(disk_data_in),
 		.dd0inclk(disk_data_clkin & wd1770_switch),
@@ -83,6 +84,7 @@ module diskdrives(
 		.rstn(rstn),
 		.side(cpuaddr[2])
 		);
+  end endgenerate;
 
 endmodule
 

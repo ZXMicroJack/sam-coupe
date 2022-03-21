@@ -128,8 +128,16 @@ module tld_sam_v4 (
         // SRAM external interface
         .sram_addr(sram_addr_from_sam),
         .sram_data(sram_data),
-        .sram_we_n(sram_we_n_from_sam)
-//         ,.testled(testled)
+        .sram_we_n(sram_we_n_from_sam),
+//         ,.testled(testled),
+        .disk_data_in(disk_data_in0),
+        .disk_data_out(disk_data_out0),
+        .disk_sr(disk_sr),
+        .disk_cr(disk_cr),
+        .disk_data_clkout(disk_data_clkout),
+        .disk_data_clkin(disk_data_clkin),
+        .disk_wp(dswitch[7:6])
+
   );
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;

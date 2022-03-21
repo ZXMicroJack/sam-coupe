@@ -277,15 +277,15 @@ module samcoupe (
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
     wire read_mouse = read_port_254 && cpuaddr[15:8] == 8'hFF;
     
-    ps2_mouse el_raton(
-        .clk(clk12),
-        .clkps2(mouseclk),
-        .dataps2(mousedata),
-        .mdata(kbcolumns_m),
-        .rdmsel(read_mouse),
-        .rstn(kb_rst_n & master_reset_n)
-		);
-		
+//     ps2_mouse el_raton(
+//         .clk(clk12),
+//         .clkps2(mouseclk),
+//         .dataps2(mousedata),
+//         .mdata(kbcolumns_m),
+//         .rdmsel(read_mouse),
+//         .rstn(kb_rst_n & master_reset_n)
+// 		);
+// 		
     saa1099 el_saa (
         .clk(clk8),  // 8 MHz
         .rst_n(kb_rst_n),
@@ -309,7 +309,7 @@ module samcoupe (
         .audio_right(audio_out_right)
 	);
     
-    diskdrives diskdrives_inst(
+    diskdrives #(.NR_DISK(1)) diskdrives_inst(
 			.disk1_n(disk1_n),
 			.disk2_n(disk2_n),
 
