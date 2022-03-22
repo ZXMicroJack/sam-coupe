@@ -28,13 +28,20 @@ module scancode_to_sam (
     output wire user_reset,
     output wire master_reset,
     output wire user_nmi
+//     ,
+//     output wire scanlines_tg,
+//     output wire scandbl_tg
     );
     
-    assign user_reset = 1'b1;
-    assign master_reset = 1'b1;
-    assign user_nmi = 1'b1;
-    
+//     assign user_reset = 1'b1;
+//     assign master_reset = 1'b1;
+//     assign user_nmi = 1'b1;
+//     
     reg[7:0] row[0:8];
+    reg kdel = 1'b0;
+    reg kf5 = 1'b0;
+//     reg ksclk = 1'b0;
+//     reg kminus = 1'b0;
     
     assign sam_col[7:0] = 8'hff ^ (
       ((sam_row[0] == 1'b0) ? row[0] : 8'h00) |
@@ -47,6 +54,18 @@ module scancode_to_sam (
       ((sam_row[7] == 1'b0) ? row[7] : 8'h00) |
       ((sam_row[8] == 1'b0) ? row[8] : 8'h00));
 
+    assign user_reset = !(kdel && row[8][0] && row[7][1]);
+    assign master_reset = !(row[4][7] && row[8][0] && row[7][1]);
+    assign user_nmi = !kf5;
+//     assign scanlines_tg = kminus;
+//     assign scandbl_tg = ksclk;
+    
+      // kdel
+    // ctrl = row[8][0]
+    // alt = row[7][1]
+    // bs = row[4][7]
+      
+      
     reg kextended = 1'b0;
     reg kreleased = 1'b0;
     always @(posedge scan_received) begin
@@ -156,6 +175,13 @@ module scancode_to_sam (
           9'h172: row[8][2] <= ! kreleased;
           9'h16b: row[8][3] <= ! kreleased;
           9'h174: row[8][4] <= ! kreleased;
+          
+          // other keys
+          8'h71: kdel <= ! kreleased;
+          8'h03: kf5 <= ! kreleased;
+//           8'h7e: ksclk <= ! kreleased;
+//           8'h7b: kminus <= ! kreleased;
+          
         endcase
         kextended <= 1'b0;
         kreleased <= 1'b0;
