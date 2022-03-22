@@ -52,7 +52,7 @@ HWZPUOPTS= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-neg -mno-div -mno-mo
 
 #DEBUG = -g
 
-FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DLOAD_INITIAL_ROM -DNO_MACHINE_MENU -DSYSTEM_DIR=\"SAMCOUPE\" -DROMPAK=\"ROM30.ROM\"
+FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DNR_DISKS=1 -DNO_MACHINE_MENU
 
 COMMON_DIR = $(SRCDIR)
 CFLAGS  = -I. -I$(COMMON_DIR)/ ${DEBUG} -c -Os $(ZPUOPTS) -ffunction-sections -fdata-sections $(FWOPTS)

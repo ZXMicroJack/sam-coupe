@@ -208,8 +208,8 @@ module tld_sam_v4 (
      .reset_n(1'b1),
 
      //-- Video signals for OSD
-     .vga_hsync(hsync),
-     .vga_vsync(vsync),
+     .vga_hsync(hsync_pal),
+     .vga_vsync(vsync_pal),
      .osd_window(osd_window),
      .osd_pixel(osd_pixel),
 

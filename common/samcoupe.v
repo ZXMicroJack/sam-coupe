@@ -205,24 +205,8 @@ module samcoupe (
         .sram_we_n(sram_we_n),
         .sram_d(sram_data)
     );
-//    ram_dual_port ram_512k (
-//        .clk(clk24),
-//        .whichturn(asic_is_using_ram),
-//        .vramaddr(vramaddr),
-//        .cpuramaddr(cpuramaddr),
-//        .mreq_n(ram_oe_n),
-//        .rd_n(rd_n),
-//        .wr_n(ram_we_n),
-//        .rfsh_n(rfsh_n),
-//        .data_from_cpu(data_from_cpu),
-//        .data_to_asic(data_to_asic),
-//        .data_to_cpu(data_from_ram),
-//        // Actual interface with SRAM
-//        .sram_a(sram_addr),
-//        .sram_we_n(sram_we_n),
-//        .sram_d(sram_data)
-//    );
-		wire [7:0] kbcolumns_k;
+
+    wire [7:0] kbcolumns_k;
 		wire [3:0] kbcolumns_m;
 		assign kbcolumns[7:0] = cpuaddr[15:8] == 8'hff 	? {kbcolumns_k[7:4], kbcolumns_k[3:0] & kbcolumns_m[3:0]}
 																										: kbcolumns_k[7:0];
@@ -237,8 +221,7 @@ module samcoupe (
       .clk(clk50m)
       );
       
-      
-    scancode_to_sam3 scan_inst(
+    scancode_to_sam scan_inst(
       .scan_received(scancode_valid),
       .scan(scancode),
       .sam_row(kbrows),
@@ -248,32 +231,6 @@ module samcoupe (
       .user_nmi(kb_nmi_n)
     );
 
-//     ps2_keyb el_teclado (
-//         .clk(clk6),
-//         .clkps2(clkps2),
-//         .dataps2(dataps2),
-//         ---------------------------------
-//         .rows(kbrows),
-//         .cols(kbcolumns_k),
-//         .rst_out_n(kb_rst_n),
-//         .nmi_out_n(kb_nmi_n),
-//         .mrst_out_n(kb_mrst_n),
-//         .user_toggles(),
-//         ---------------------------------
-//         .zxuno_addr(8'h00),
-//         .zxuno_regrd(1'b0),
-//         .zxuno_regwr(1'b0),
-//         .regaddr_changed(1'b0),
-//         .din(data_from_cpu),
-//         .keymap_dout(),
-//         .oe_n_keymap(),
-//         .scancode_dout(),
-//         .oe_n_scancode(),
-//         .kbstatus_dout(),
-//         .oe_n_kbstatus()
-//         ,.testled(testled)
-//     );
-    
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
     wire read_mouse = read_port_254 && cpuaddr[15:8] == 8'hFF;
     
