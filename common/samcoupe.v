@@ -195,7 +195,7 @@ module samcoupe (
     );
     
     ram_dual_port_turnos ram_512k (
-        .clk(1'b0 /*clk24*/),
+        .clk(clk50m),
         .whichturn(asic_is_using_ram),
         .vramaddr(vramaddr),
         .cpuramaddr(cpuramaddr),
