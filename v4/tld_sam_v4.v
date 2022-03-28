@@ -293,7 +293,7 @@ module tld_sam_v4 (
      .green_in(vga_green_i),
      .blue_in(vga_blue_i),
      .window_in(1'b1),
-     .osd_window_in(osd_window),
+     .osd_window_in(host_divert_keyboard || osd_window),
      .osd_pixel_in(osd_pixel),
      .hsync_in(hsync_pal),
      .red_out(vga_red_o),
