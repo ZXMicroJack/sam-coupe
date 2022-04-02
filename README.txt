@@ -9,10 +9,11 @@ Keys
 - F12 - disk menu
 - CTRL-ALT-DEL - reset SAM
 - CTRL-ALT-Backspace - reset to BIOS.
+- SCROLL-LOCK - switch from VGA to RGB and back.
+- (numeric keypad [-]) - switch on/off scanlines
 
 Known issues
 ------------
-- Slight screen corruption during processor intensive stuff.
 - Only 1 disk at the moment
 - Only support for .DSK format
 
