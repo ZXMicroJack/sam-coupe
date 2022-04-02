@@ -78,7 +78,7 @@ module tld_sam_v4 (
   wire ear_in_sc; 
   wire ear_in = ear_in_sc ^ ear;
     
-    wire clk24, clk12, clk6, clk8, clk50m, clk6m;
+    wire clk24, clk12, clk6, clk8, clk50m;
 
     wire scanlines_tg;
     wire scandbl_tg;
@@ -100,8 +100,7 @@ module tld_sam_v4 (
         .CLK_OUT2           (clk12),  // ASIC
         .CLK_OUT3           (clk6),   // CPU y teclado PS/2
         .CLK_OUT4           (clk8),   // SAA1099 y DAC
-        .CLK_OUT5           (clk50m),  // el resto de stuffo
-        .CLK_OUT6           (clk6m)   // para CPU ctrl-module
+        .CLK_OUT5           (clk50m)  // un reloj duplicado de 50Mhz
     );
 
     samcoupe maquina (
@@ -139,8 +138,7 @@ module tld_sam_v4 (
         .disk_cr(disk_cr),
         .disk_data_clkout(disk_data_clkout),
         .disk_data_clkin(disk_data_clkin),
-        .disk_wp(dswitch[7:6])
-        ,
+        .disk_wp(dswitch[7:6]),
         .scanlines_tg(scanlines_tg),
         .scandbl_tg(scandbl_tg)
   );
@@ -158,8 +156,6 @@ module tld_sam_v4 (
 		.clkvga(clk24),
 		.enable_scandoubling(scandoubler_ctrl[0] ^ scandbl_inv),
     .disable_scaneffect(~scandoubler_ctrl[1] ^ scanlines_inv),
-// 		.enable_scandoubling(scandoubler_ctrl[0]),
-//     .disable_scaneffect(~scandoubler_ctrl[1]),
 		.ri(vga_red_o[7:5]),
 		.gi(vga_green_o[7:5]),
 		.bi(vga_blue_o[7:5]),
@@ -217,7 +213,7 @@ module tld_sam_v4 (
   
 
    CtrlModule MyCtrlModule (
-     .clk(clk6m),	
+     .clk(clk6),	
      .clk26(clk50m),
      .reset_n(1'b1),
 

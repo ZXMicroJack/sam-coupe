@@ -76,10 +76,9 @@ module relojes
   output wire       CLK_OUT2,
   output wire       CLK_OUT3,
   output wire       CLK_OUT4,
-  output wire       CLK_OUT5,
-  output wire       CLK_OUT6);
+  output wire       CLK_OUT5);
 
-  wire clkin1, clkout0, clkout1, clkout2, clkout3, clkout4, clkout5;
+  wire clkin1, clkout0, clkout1, clkout2, clkout3, clkout4, clkout5_unused;
 
   // Input buffering
   //------------------------------------
@@ -122,9 +121,6 @@ module relojes
     .CLKOUT4_DIVIDE         (12),
     .CLKOUT4_PHASE          (0.000),
     .CLKOUT4_DUTY_CYCLE     (0.500),
-    .CLKOUT5_DIVIDE         (100),
-    .CLKOUT5_PHASE          (0.000),
-    .CLKOUT5_DUTY_CYCLE     (0.500),
     .CLKIN_PERIOD           (20.0),
     .REF_JITTER             (0.010))
   pll_base_inst
@@ -135,7 +131,7 @@ module relojes
     .CLKOUT2               (clkout2),
     .CLKOUT3               (clkout3),
     .CLKOUT4               (clkout4),
-    .CLKOUT5               (clkout5),
+    .CLKOUT5               (clkout5_unused),
     .LOCKED                (locked_unused),
     .RST                   (1'b0),
      // Input clock control
@@ -166,9 +162,5 @@ module relojes
   BUFG clkout5_buf
    (.O   (CLK_OUT5),
     .I   (clkout4));
-
-  BUFG clkout6_buf
-   (.O   (CLK_OUT6),
-    .I   (clkout5));
     
 endmodule

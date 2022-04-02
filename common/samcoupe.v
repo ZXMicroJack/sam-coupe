@@ -57,8 +57,7 @@ module samcoupe (
     input wire disk_data_clkout,
     input wire disk_data_clkin,
     input wire[1:0] disk_wp,
-    output wire testled
-    ,
+    output wire testled,
     output wire scanlines_tg,
     output wire scandbl_tg
     );
@@ -82,10 +81,6 @@ module samcoupe (
     wire kb_rst_n;
     wire kb_mrst_n;
     wire rdmsel;
-//     reg kb_nmi_n = 1'b1;
-//     reg kb_rst_n = 1'b1;
-//     reg kb_mrst_n = 1'b1;
-//     reg rdmsel = 1'b0;
     assign kbrows = {rdmsel, cpuaddr[15:8]};
     
     // CPU signals

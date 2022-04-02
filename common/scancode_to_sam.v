@@ -27,8 +27,7 @@ module scancode_to_sam (
     output wire [7:0] sam_col,
     output wire user_reset,
     output wire master_reset,
-    output wire user_nmi
-    ,
+    output wire user_nmi,
     output wire scanlines_tg,
     output wire scandbl_tg
     );
