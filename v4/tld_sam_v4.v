@@ -80,8 +80,8 @@ module tld_sam_v4 (
     
     wire clk24, clk12, clk6, clk8, clk50m, clk6m;
 
-//     wire scanlines_tg;
-//     wire scandbl_tg;
+    wire scanlines_tg;
+    wire scandbl_tg;
     
     reg [7:0] poweron_reset = 8'h00;
     reg [1:0] scandoubler_ctrl = 2'b00;
@@ -140,26 +140,26 @@ module tld_sam_v4 (
         .disk_data_clkout(disk_data_clkout),
         .disk_data_clkin(disk_data_clkin),
         .disk_wp(dswitch[7:6])
-//         ,
-//         .scanlines_tg(scanlines_tg),
-//         .scandbl_tg(scandbl_tg)
+        ,
+        .scanlines_tg(scanlines_tg),
+        .scandbl_tg(scandbl_tg)
   );
   
-//   reg scanlines_inv = 1'b0;
-//   reg scandbl_inv = 1'b0;
-//   always @(posedge scanlines_tg)
-//     scanlines_inv <= ! scanlines_inv;
-//   always @(posedge scandbl_tg)
-//     scandbl_inv <= ! scandbl_inv;
+  reg scanlines_inv = 1'b0;
+  reg scandbl_inv = 1'b0;
+  always @(posedge scanlines_tg)
+    scanlines_inv <= ! scanlines_inv;
+  always @(posedge scandbl_tg)
+    scandbl_inv <= ! scandbl_inv;
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;
 	vga_scandoubler #(.CLKVIDEO(12000)) salida_vga (
 		.clkvideo(clk12),
 		.clkvga(clk24),
-// 		.enable_scandoubling(scandoubler_ctrl[0] ^ scandbl_inv),
-//     .disable_scaneffect(~scandoubler_ctrl[1] ^ scanlines_inv),
-		.enable_scandoubling(scandoubler_ctrl[0]),
-    .disable_scaneffect(~scandoubler_ctrl[1]),
+		.enable_scandoubling(scandoubler_ctrl[0] ^ scandbl_inv),
+    .disable_scaneffect(~scandoubler_ctrl[1] ^ scanlines_inv),
+// 		.enable_scandoubling(scandoubler_ctrl[0]),
+//     .disable_scaneffect(~scandoubler_ctrl[1]),
 		.ri(vga_red_o[7:5]),
 		.gi(vga_green_o[7:5]),
 		.bi(vga_blue_o[7:5]),
@@ -293,7 +293,7 @@ module tld_sam_v4 (
      .green_in(vga_green_i),
      .blue_in(vga_blue_i),
      .window_in(1'b1),
-     .osd_window_in(host_divert_keyboard || osd_window),
+     .osd_window_in(osd_window),
      .osd_pixel_in(osd_pixel),
      .hsync_in(hsync_pal),
      .red_out(vga_red_o),
