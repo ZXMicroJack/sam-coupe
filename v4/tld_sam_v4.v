@@ -48,7 +48,13 @@ module tld_sam_v4 (
     output sd_cs_n,
     output sd_clk,
     output sd_mosi,
-    input wire sd_miso
+    input wire sd_miso,
+    input wire joyup,
+    input wire joydown,
+    input wire joyleft,
+    input wire joyright,
+    input wire joyfire,
+    output wire joyselect
 //     ,output wire testled
     );
 
@@ -103,6 +109,8 @@ module tld_sam_v4 (
         .CLK_OUT5           (clk50m)  // un reloj duplicado de 50Mhz
     );
 
+    // select 1 joystick
+    assign joyselect = 1'b0;
     samcoupe maquina (
         .clk50m(clk50m),
         .clk24(clk24),
@@ -140,7 +148,8 @@ module tld_sam_v4 (
         .disk_data_clkin(disk_data_clkin),
         .disk_wp(dswitch[7:6]),
         .scanlines_tg(scanlines_tg),
-        .scandbl_tg(scandbl_tg)
+        .scandbl_tg(scandbl_tg),
+        .joystick1({joyleft,joyright,joydown,joyup,joyfire})
   );
   
   reg scanlines_inv = 1'b0;

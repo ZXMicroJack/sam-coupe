@@ -7,6 +7,7 @@ FAT16 or FAT32 format in DSK format.
 Keys
 ----
 - F12 - disk menu
+- F5 - NMI button
 - CTRL-ALT-DEL - reset SAM
 - CTRL-ALT-Backspace - reset to BIOS.
 - SCROLL-LOCK - switch from VGA to RGB and back.

@@ -29,7 +29,8 @@ module scancode_to_sam (
     output wire master_reset,
     output wire user_nmi,
     output wire scanlines_tg,
-    output wire scandbl_tg
+    output wire scandbl_tg,
+    input wire[4:0] joystick1
     );
     
 //     assign user_reset = 1'b1;
@@ -47,7 +48,8 @@ module scancode_to_sam (
       ((sam_row[1] == 1'b0) ? row[1] : 8'h00) |
       ((sam_row[2] == 1'b0) ? row[2] : 8'h00) |
       ((sam_row[3] == 1'b0) ? row[3] : 8'h00) |
-      ((sam_row[4] == 1'b0) ? row[4] : 8'h00) |
+      ((sam_row[4] == 1'b0) ? {row[4][7:5], (row[4][4:0] | joystick1[4:0])} : 8'h00) |
+//       ((sam_row[4] == 1'b0) ? row[4] : 8'h00) |
       ((sam_row[5] == 1'b0) ? row[5] : 8'h00) |
       ((sam_row[6] == 1'b0) ? row[6] : 8'h00) |
       ((sam_row[7] == 1'b0) ? row[7] : 8'h00) |
