@@ -146,8 +146,8 @@ module scancode_to_sam (
           8'h43: row[5][2] <= ! kreleased;
           8'h3c: row[5][3] <= ! kreleased;
           8'h35: row[5][4] <= ! kreleased;
-          8'h5d: row[5][5] <= ! kreleased;
-          8'h0e: row[5][6] <= ! kreleased;
+          8'h54: row[5][5] <= ! kreleased;
+          8'h5b: row[5][6] <= ! kreleased;
           8'h70: row[5][7] <= ! kreleased;
           
           // ent l  k  j  h  ;   :   edit
@@ -162,7 +162,8 @@ module scancode_to_sam (
           
           // src ss m  n  b  ,   .   inv
           8'h29: row[7][0] <= ! kreleased;
-          8'h11: row[7][1] <= ! kreleased;
+          8'h14: row[7][1] <= ! kreleased;
+          9'h114: row[7][1] <= ! kreleased;
           8'h3a: row[7][2] <= ! kreleased;
           8'h31: row[7][3] <= ! kreleased;
           8'h32: row[7][4] <= ! kreleased;
@@ -171,7 +172,7 @@ module scancode_to_sam (
           8'h4a: row[7][7] <= ! kreleased;
 
           // ctl up dn lt rt
-          8'h14: row[8][0] <= ! kreleased;
+          8'h11: row[8][0] <= ! kreleased;
           9'h175: row[8][1] <= ! kreleased;
           9'h172: row[8][2] <= ! kreleased;
           9'h16b: row[8][3] <= ! kreleased;
