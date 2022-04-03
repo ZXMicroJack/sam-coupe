@@ -268,7 +268,7 @@ module samcoupe (
         .audio_right(audio_out_right)
 	);
     
-    diskdrives #(.NR_DISK(1)) diskdrives_inst(
+    diskdrives #(.NR_DISK(2)) diskdrives_inst(
 			.disk1_n(disk1_n),
 			.disk2_n(disk2_n),
 
