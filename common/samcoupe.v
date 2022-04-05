@@ -245,8 +245,20 @@ module samcoupe (
         .rstn(kb_rst_n & master_reset_n)
 		);
 		
-    saa1099 el_saa (
-        .clk(clk8),  // 8 MHz
+//     saa1099 el_saa (
+//         .clk(clk8),  // 8 MHz
+//         .rst_n(kb_rst_n),
+//         .cs_n(~(cpuaddr[7:0] == 8'hFF && iorq_n == 1'b0)),
+//         .a0(cpuaddr[8]),  // 0=data, 1=address
+//         .wr_n(wr_n),
+//         .din(data_from_cpu),
+//         .out_l(saa_out_l),
+//         .out_r(saa_out_r)
+//     );
+
+    saa1099s el_saa (
+        .clk_sys(clk8),  // 8 MHz
+        .ce(1'b1),  // 8 MHz
         .rst_n(kb_rst_n),
         .cs_n(~(cpuaddr[7:0] == 8'hFF && iorq_n == 1'b0)),
         .a0(cpuaddr[8]),  // 0=data, 1=address
