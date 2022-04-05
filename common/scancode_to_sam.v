@@ -179,7 +179,7 @@ module scancode_to_sam (
           9'h174: row[8][4] <= ! kreleased;
           
           // other keys
-          8'h71: kdel <= ! kreleased;
+          9'h171: kdel <= ! kreleased;
           8'h03: kf5 <= ! kreleased;
           8'h7e: ksclk <= ! kreleased;
           8'h7b: kminus <= ! kreleased;

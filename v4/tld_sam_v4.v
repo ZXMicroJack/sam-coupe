@@ -110,7 +110,7 @@ module tld_sam_v4 (
     );
 
     // select 1 joystick
-    assign joyselect = 1'b0;
+    assign joyselect = 1'b1;
     samcoupe maquina (
         .clk50m(clk50m),
         .clk24(clk24),
