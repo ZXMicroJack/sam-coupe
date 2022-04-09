@@ -286,9 +286,9 @@ module tld_sam_v4 (
 
    wire[7:0] vga_red_i, vga_green_i, vga_blue_i;
 
-   assign vga_red_i = {sam_r[1:0], 6'h0};
-   assign vga_green_i = {sam_g[1:0], 6'h0};
-   assign vga_blue_i = {sam_b[1:0], 6'h0};
+   assign vga_red_i = {ri[2:0], 5'h0};
+   assign vga_green_i = {gi[2:0], 5'h0};
+   assign vga_blue_i = {bi[2:0], 5'h0};
    
    // OSD Overlay
    OSD_Overlay overlay (
