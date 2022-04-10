@@ -52,7 +52,7 @@ HWZPUOPTS= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-neg -mno-div -mno-mo
 
 #DEBUG = -g
 
-FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DNR_DISKS=1 -DNO_MACHINE_MENU
+FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DNR_DISKS=1 -DNO_MACHINE_MENU -DBLANK_FIRST_SECTORS=40
 
 COMMON_DIR = $(SRCDIR)
 CFLAGS  = -I. -I$(COMMON_DIR)/ ${DEBUG} -c -Os $(ZPUOPTS) -ffunction-sections -fdata-sections $(FWOPTS)
