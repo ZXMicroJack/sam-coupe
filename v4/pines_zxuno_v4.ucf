@@ -73,15 +73,14 @@ NET "sd_mosi" LOC="P74" |IOSTANDARD = LVCMOS33;
 NET "sd_miso" LOC="P78" |IOSTANDARD = LVCMOS33;
 #
 ## JOYSTICK
-NET "joyup"    LOC="P1"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY6
-NET "joydown"  LOC="P5"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY4
-NET "joyleft"  LOC="P6"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY3
-NET "joyright" LOC="P7"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY2
-NET "joyfire"  LOC="P2"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY7
+NET "joyup"    LOC="P1"  |IOSTANDARD = LVCMOS33 |PULLUP;  #JOY6
+NET "joydown"  LOC="P5"  |IOSTANDARD = LVCMOS33 |PULLUP;  #JOY4
+NET "joyleft"  LOC="P6"  |IOSTANDARD = LVCMOS33 |PULLUP;  #JOY3
+NET "joyright" LOC="P7"  |IOSTANDARD = LVCMOS33 |PULLUP;  #JOY2
+NET "joyfire"  LOC="P2"  |IOSTANDARD = LVCMOS33 |PULLUP;  #JOY7
 NET "joyselect" LOC = P39;
-NET "joyselect" IOSTANDARD = LVCMOS33 | DRIVE=24 | SLEW = SLOW;
+NET "joyselect" IOSTANDARD = LVCMOS33 |DRIVE=24 |SLEW = SLOW;
 ##--##
-
 ##NET "btn2"    LOC="P8"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY5
 #Created by Constraints Editor (xc6slx9-tqg144-2) - 2022/04/02
 #NET "clk50mhz" TNM_NET = clk50mhz;
@@ -96,3 +95,10 @@ NET "joyselect" IOSTANDARD = LVCMOS33 | DRIVE=24 | SLEW = SLOW;
 #NET "clk12" TNM_NET = allclocks;
 #NET "clk24" TNM_NET = allclocks;
 #NET "clk50m" TNM_NET = allclocks;
+#Created by Constraints Editor (xc6slx9-tqg144-2) - 2022/04/12
+NET "clk50mhz" TNM_NET = clk50mhz;
+TIMESPEC TS_clk50mhz = PERIOD "clk50mhz" 20 ns HIGH 50%;
+NET "count<0>" TNM_NET = count<0>;
+PIN "los_relojes/pll_base_inst.CLKOUT0" TNM = CLK48;
+NET "los_relojes/clk8" TNM_NET = los_relojes/clk8;
+TIMESPEC TS_los_relojes_clk8 = PERIOD "los_relojes/clk8" TS_los_relojes_clkout0 / 6 HIGH 50%;

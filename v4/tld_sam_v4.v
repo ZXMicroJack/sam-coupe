@@ -197,7 +197,7 @@ module tld_sam_v4 (
    always @(posedge clk50m)
      count <= count + 1;
 
-   wire clk6m25 = count[2];
+//    wire clk6m25 = count[2];
    wire clk390k625 = count[6];
    wire tape_dclk;
    wire tape_reset;
