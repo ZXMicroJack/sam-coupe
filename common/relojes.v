@@ -78,7 +78,7 @@ module relojes
   output wire       CLK_OUT4,
   output wire       CLK_OUT5);
 
-  wire clkin1, clkout0, clkout1, clkout2, clkout3, clkout4, clkout5_unused;
+  wire clkin1, clkout0, clkout1_unused, clkout2_unused, clkout3_unused, clkout4_unused, clkout5_unused;
 
   // Input buffering
   //------------------------------------
@@ -102,65 +102,79 @@ module relojes
   PLL_BASE
   #(.BANDWIDTH              ("OPTIMIZED"),
     .CLK_FEEDBACK           ("CLKFBOUT"),
-    .COMPENSATION           ("INTERNAL"),
-    .DIVCLK_DIVIDE          (1),
-    .CLKFBOUT_MULT          (12),
+    .COMPENSATION           ("SYSTEM_SYNCHRONOUS"),
+    .DIVCLK_DIVIDE          (2),
+    .CLKFBOUT_MULT          (25),
     .CLKFBOUT_PHASE         (0.000),
-    .CLKOUT0_DIVIDE         (25),
+    .CLKOUT0_DIVIDE         (13),
     .CLKOUT0_PHASE          (0.000),
     .CLKOUT0_DUTY_CYCLE     (0.500),
-    .CLKOUT1_DIVIDE         (50),
-    .CLKOUT1_PHASE          (0.000),
-    .CLKOUT1_DUTY_CYCLE     (0.500),
-    .CLKOUT2_DIVIDE         (100),
-    .CLKOUT2_PHASE          (0.000),
-    .CLKOUT2_DUTY_CYCLE     (0.500),
-    .CLKOUT3_DIVIDE         (75),
-    .CLKOUT3_PHASE          (0.000),
-    .CLKOUT3_DUTY_CYCLE     (0.500),
-    .CLKOUT4_DIVIDE         (12),
-    .CLKOUT4_PHASE          (0.000),
-    .CLKOUT4_DUTY_CYCLE     (0.500),
     .CLKIN_PERIOD           (20.0),
     .REF_JITTER             (0.010))
   pll_base_inst
-    // Output clocks
+//     Output clocks
    (.CLKFBOUT              (clkfbout),
     .CLKOUT0               (clkout0),
-    .CLKOUT1               (clkout1),
-    .CLKOUT2               (clkout2),
-    .CLKOUT3               (clkout3),
-    .CLKOUT4               (clkout4),
+    .CLKOUT1               (clkout1_unused),
+    .CLKOUT2               (clkout2_unused),
+    .CLKOUT3               (clkout3_unused),
+    .CLKOUT4               (clkout4_unused),
     .CLKOUT5               (clkout5_unused),
     .LOCKED                (locked_unused),
     .RST                   (1'b0),
-     // Input clock control
+//      Input clock control
     .CLKFBIN               (clkfbout),
     .CLKIN                 (clkin1));
 
+// DCM_SP #(
+//   .CLKDV_DIVIDE(2.0),
+//   .CLKFX_DIVIDE(25),
+//   .CLKFX_MULTIPLY(24),
+//   .CLKIN_DIVIDE_BY_2("FALSE"),
+//   .CLKIN_PERIOD(20.0),
+//   .CLKOUT_PHASE_SHIFT("NONE"),
+//   .CLK_FEEDBACK("1X"),
+//   .DESKEW_ADJUST("SYSTEM_SYNCHRONOUS"),
+//   .DFS_FREQUENCY_MODE("LOW"),
+//   .DLL_FREQUENCY_MODE("LOW"),
+//   .DSS_MODE("NONE"),
+//   .DUTY_CYCLE_CORRECTION("TRUE"),
+//   .FACTORY_JF(16'hc080),
+//   .PHASE_SHIFT(0),
+//   .STARTUP_WAIT("FALSE")
+// ) DCM_SP_inst (
+//   .CLKFX(clkout0),
+//   .CLKIN(clkin1),
+//   .PSEN(1'b0)
+// );
 
   // Output buffering
   //-----------------------------------
 
 
+  wire clk48;
   BUFG clkout1_buf
-   (.O   (CLK_OUT1),
+   (.O   (clk48),
     .I   (clkout0));
+//     
+  reg clk8 = 1'b0;
 
-  BUFG clkout2_buf
-   (.O   (CLK_OUT2),
-    .I   (clkout1));
 
-  BUFG clkout3_buf
-   (.O   (CLK_OUT3),
-    .I   (clkout2));
+  reg[2:0] clkcounter = 0;
+  assign CLK_OUT1 = clkcounter[0];
+  assign CLK_OUT2 = clkcounter[1];
+  assign CLK_OUT3 = clkcounter[2];
+  assign CLK_OUT4 = clk8;
+  assign CLK_OUT5 = clk48;
 
-  BUFG clkout4_buf
-   (.O   (CLK_OUT4),
-    .I   (clkout3));
+  reg[3:0] clk8ct = 1'b0;
+  always @(posedge clk48) begin
+    clkcounter <= clkcounter + 1;
 
-  BUFG clkout5_buf
-   (.O   (CLK_OUT5),
-    .I   (clkout4));
-    
+    if (clk8ct == 2) begin 
+      clk8 <= !clk8;
+      clk8ct <= 1'b0;
+    end else clk8ct <= clk8ct + 1;
+  end
+
 endmodule

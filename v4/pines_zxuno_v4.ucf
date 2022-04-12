@@ -84,15 +84,15 @@ NET "joyselect" IOSTANDARD = LVCMOS33 | DRIVE=24 | SLEW = SLOW;
 
 ##NET "btn2"    LOC="P8"  | IOSTANDARD = LVCMOS33 | PULLUP;  #JOY5
 #Created by Constraints Editor (xc6slx9-tqg144-2) - 2022/04/02
-NET "clk50mhz" TNM_NET = clk50mhz;
-TIMESPEC TS_clk50mhz = PERIOD "clk50mhz" 20 ns HIGH 50%;
-PIN "los_relojes/pll_base_inst.CLKOUT3" TNM = DCM_output;
-PIN "los_relojes/pll_base_inst.CLKOUT1" TNM = DCM_output;
-PIN "los_relojes/pll_base_inst.CLKOUT0" TNM = DCM_output;
-PIN "los_relojes/pll_base_inst.CLKOUT4" TNM = DCM_output;
-PIN "los_relojes/pll_base_inst.CLKOUT2" TNM = DCM_output;
-NET "clk6" TNM_NET = allclocks;
-NET "clk8" TNM_NET = allclocks;
-NET "clk12" TNM_NET = allclocks;
-NET "clk24" TNM_NET = allclocks;
-NET "clk50m" TNM_NET = allclocks;
+#NET "clk50mhz" TNM_NET = clk50mhz;
+#TIMESPEC TS_clk50mhz = PERIOD "clk50mhz" 20 ns HIGH 50%;
+#PIN "los_relojes/pll_base_inst.CLKOUT3" TNM = DCM_output;
+#PIN "los_relojes/pll_base_inst.CLKOUT1" TNM = DCM_output;
+#PIN "los_relojes/pll_base_inst.CLKOUT0" TNM = DCM_output;
+#PIN "los_relojes/pll_base_inst.CLKOUT4" TNM = DCM_output;
+#PIN "los_relojes/pll_base_inst.CLKOUT2" TNM = DCM_output;
+#NET "clk6" TNM_NET = allclocks;
+#NET "clk8" TNM_NET = allclocks;
+#NET "clk12" TNM_NET = allclocks;
+#NET "clk24" TNM_NET = allclocks;
+#NET "clk50m" TNM_NET = allclocks;
