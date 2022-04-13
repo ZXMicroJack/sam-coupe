@@ -21,7 +21,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module samcoupe (
-    input wire clk50m,
+    input wire clk48,
     input wire clk24,
     input wire clk12,
     input wire clk6,
@@ -169,7 +169,6 @@ module samcoupe (
         .beep(beep),
         // keyboard I/O
         .keyboard(kbcolumns),
-//         .keyboard(kbcolumns_k),
         .rdmsel(rdmsel),
         // disk I/O
         .disc1_n(disk1_n),
@@ -191,7 +190,7 @@ module samcoupe (
     );
     
     ram_dual_port_turnos ram_512k (
-        .clk(clk50m),
+        .clk(clk48),
         .whichturn(asic_is_using_ram),
         .vramaddr(vramaddr),
         .cpuramaddr(cpuramaddr),
@@ -217,7 +216,7 @@ module samcoupe (
       .kbd_data(dataps2),
       .kbd_key(scancode),
       .kbd_key_valid(scancode_valid),
-      .clk(clk50m)
+      .clk(clk48)
       );
       
     scancode_to_sam scan_inst(
@@ -245,17 +244,6 @@ module samcoupe (
         .rstn(kb_rst_n & master_reset_n)
 		);
 		
-//     saa1099 el_saa (
-//         .clk(clk8),  // 8 MHz
-//         .rst_n(kb_rst_n),
-//         .cs_n(~(cpuaddr[7:0] == 8'hFF && iorq_n == 1'b0)),
-//         .a0(cpuaddr[8]),  // 0=data, 1=address
-//         .wr_n(wr_n),
-//         .din(data_from_cpu),
-//         .out_l(saa_out_l),
-//         .out_r(saa_out_r)
-//     );
-
     saa1099s el_saa (
         .clk_sys(clk8),  // 8 MHz
         .ce(1'b1),  // 8 MHz

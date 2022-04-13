@@ -55,7 +55,6 @@ module tld_sam_v4 (
     input wire joyright,
     input wire joyfire,
     output wire joyselect
-//     ,output wire testled
     );
 
     // Interface with RAM
@@ -84,7 +83,7 @@ module tld_sam_v4 (
   wire ear_in_sc; 
   wire ear_in = ear_in_sc ^ ear;
     
-    wire clk24, clk12, clk6, clk8, clk50m;
+    wire clk24, clk12, clk6, clk8, clk48;
 
     wire scanlines_tg;
     wire scandbl_tg;
@@ -106,13 +105,13 @@ module tld_sam_v4 (
         .CLK_OUT2           (clk12),  // ASIC
         .CLK_OUT3           (clk6),   // CPU y teclado PS/2
         .CLK_OUT4           (clk8),   // SAA1099 y DAC
-        .CLK_OUT5           (clk50m)  // un reloj duplicado de 50Mhz
+        .CLK_OUT5           (clk48)  // un reloj duplicado de 50Mhz
     );
 
     // select 1 joystick
     assign joyselect = 1'b1;
     samcoupe maquina (
-        .clk50m(clk50m),
+        .clk48(clk48),
         .clk24(clk24),
         .clk12(clk12),
         .clk6(clk6),
@@ -139,7 +138,6 @@ module tld_sam_v4 (
         .sram_addr(sram_addr_from_sam),
         .sram_data(sram_data),
         .sram_we_n(sram_we_n_from_sam),
-//         ,.testled(testled),
         .disk_data_in(disk_data_in0),
         .disk_data_out(disk_data_out0),
         .disk_sr(disk_sr),
@@ -194,10 +192,9 @@ module tld_sam_v4 (
    wire hyperload_fifo_full;
 
    reg[31:0] count;
-   always @(posedge clk50m)
+   always @(posedge clk48)
      count <= count + 1;
 
-//    wire clk6m25 = count[2];
    wire clk390k625 = count[6];
    wire tape_dclk;
    wire tape_reset;
@@ -208,7 +205,7 @@ module tld_sam_v4 (
    fifo #(.RAM_SIZE(512), .ADDRESS_WIDTH(9)) hyperload_fifo_inst(
      .q(hyperload_fifo_data[7:0]),
      .d(tape_data[7:0]),
-     .clk(clk50m),
+     .clk(clk48),
      .write(tape_dclk),
      .reset(tape_reset),
 
@@ -223,7 +220,7 @@ module tld_sam_v4 (
 
    CtrlModule MyCtrlModule (
      .clk(clk6),	
-     .clk26(clk50m),
+     .clk26(clk48),
      .reset_n(1'b1),
 
      //-- Video signals for OSD
@@ -262,21 +259,15 @@ module tld_sam_v4 (
 
       // disk interface
       .disk_sr(disk_sr),
-      .disk_cr(disk_cr),
+      .disk_cr(disk_cr)
 
-      .tape_data_out(tape_data),
-      .tape_dclk_out(tape_dclk),
-      .tape_reset_out(tape_reset),
-
-      .tape_hreq(tape_hreq),
-      .tape_busy(tape_busy),
-      .cpu_reset(1'b0)
-//       , //TODO
-
-      // jtag uart interface
-//       .juart_rx(juart_rx),
-//       .juart_tx(juart_tx)
-      ,.debug(0)
+//       .tape_data_out(tape_data),
+//       .tape_dclk_out(tape_dclk),
+//       .tape_reset_out(tape_reset),
+// 
+//       .tape_hreq(tape_hreq),
+//       .tape_busy(tape_busy),
+//       .cpu_reset(1'b0)
 	
    );
 
@@ -292,8 +283,7 @@ module tld_sam_v4 (
    
    // OSD Overlay
    OSD_Overlay overlay (
-     // .clk(clk25),
-     .clk(clk50m),
+     .clk(clk48),
      .red_in(vga_red_i),
      .green_in(vga_green_i),
      .blue_in(vga_blue_i),
@@ -305,7 +295,7 @@ module tld_sam_v4 (
      .green_out(vga_green_o),
      .blue_out(vga_blue_o),
      .window_out( ),
-     .scanline_ena(1'b0) //scandblr_reg[1])
+     .scanline_ena(1'b0)
    );
 
 endmodule
