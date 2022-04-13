@@ -245,8 +245,8 @@ module samcoupe (
 		);
 		
     saa1099s el_saa (
-        .clk_sys(clk8),  // 8 MHz
-        .ce(1'b1),  // 8 MHz
+        .clk_sys(clk48),  // 8 MHz
+        .ce(clk8),  // 8 MHz
         .rst_n(kb_rst_n),
         .cs_n(~(cpuaddr[7:0] == 8'hFF && iorq_n == 1'b0)),
         .a0(cpuaddr[8]),  // 0=data, 1=address

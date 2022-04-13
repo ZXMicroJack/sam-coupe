@@ -219,7 +219,7 @@ module tld_sam_v4 (
   
 
    CtrlModule MyCtrlModule (
-     .clk(clk6),	
+     .clk(clk6),
      .clk26(clk48),
      .reset_n(1'b1),
 

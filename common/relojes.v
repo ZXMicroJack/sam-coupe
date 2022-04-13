@@ -158,6 +158,9 @@ module relojes
     .I   (clkout0));
 //     
   reg clk8 = 1'b0;
+  reg clk24 = 1'b0;
+  reg clk12 = 1'b0;
+  reg clk6 = 1'b0;
 
 
   reg[2:0] clkcounter = 0;
@@ -168,11 +171,20 @@ module relojes
   assign CLK_OUT5 = clk48;
 
   reg[3:0] clk8ct = 1'b0;
+  
   always @(posedge clk48) begin
-    clkcounter <= clkcounter + 1;
+    clk8 <= 1'b0;
+    clk24 <= 1'b0;
+    clk12 <= 1'b0;
+    clk6 <= 1'b0;
 
-    if (clk8ct == 2) begin 
-      clk8 <= !clk8;
+    clkcounter <= clkcounter + 1;
+    if (clkcounter[0] == 1'b1) clk24 <= 1'b1;
+    if (clkcounter[1:0] == 1'b11) clk12 <= 1'b1;
+    if (clkcounter[2:0] == 1'b111) clk6 <= 1'b1;
+
+    if (clk8ct == 5) begin 
+      clk8 <= 1'b1;
       clk8ct <= 1'b0;
     end else clk8ct <= clk8ct + 1;
   end
