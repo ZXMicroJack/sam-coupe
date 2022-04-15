@@ -271,7 +271,7 @@ module samcoupe (
         .audio_right(audio_out_right)
 	);
     
-    diskdrives #(.NR_DISK(1)) diskdrives_inst(
+    diskdrives #(.NR_DISK(2), .SHARED_FDC(1)) diskdrives_inst(
 			.disk1_n(disk1_n),
 			.disk2_n(disk2_n),
 
@@ -293,6 +293,7 @@ module samcoupe (
 			.clk12(clk12),
 			.clk24(clk24)
 		);
+		
     multiboot back_to_bios (
         .clk_icap(clk24),   // WARNING: this clock must not be greater than 20MHz (50ns period)
         .mrst_n(kb_mrst_n)
