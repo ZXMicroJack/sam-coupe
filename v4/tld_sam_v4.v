@@ -79,7 +79,7 @@ module tld_sam_v4 (
   wire[31:0] disk_cr;
   wire disk_data_clkout, disk_data_clkin;
 
-    assign stdn = 1'b0;  // fijar norma PAL
+  assign stdn = 1'b0;  // fijar norma PAL
 	assign stdnb = 1'b1; // y conectamos reloj PAL
   wire ear_in_sc; 
   wire ear_in = ear_in_sc ^ ear;
@@ -88,6 +88,7 @@ module tld_sam_v4 (
 
     wire scanlines_tg;
     wire scandbl_tg;
+    wire joysplitter_tg;
     
     reg [7:0] poweron_reset = 8'h00;
     reg [1:0] scandoubler_ctrl = 2'b00;
@@ -96,6 +97,7 @@ module tld_sam_v4 (
         if (poweron_reset[6] == 1'b0)
             scandoubler_ctrl <= sram_data[1:0];
     end
+    
     assign sram_addr = (poweron_reset[7] == 1'b0)? 21'h008FD5 : {2'b00, sram_addr_from_sam};
     assign sram_we_n = (poweron_reset[7] == 1'b0)? 1'b1 : sram_we_n_from_sam;
                        
@@ -110,7 +112,21 @@ module tld_sam_v4 (
     );
 
     // select 1 joystick
-    assign joyselect = 1'b1;
+    assign joyselect = joysplitter ? joytoggle : 1'b1;
+    reg joysplitter = 1'b0;
+    reg[4:0] joystick1 = 5'h00;
+    reg[4:0] joystick2 = 5'h00;
+    reg joytoggle = 1'b0;
+    
+    always @(posedge clk390k625) begin
+      if (joytoggle)
+        joystick1[4:0] <= {joyleft,joyright,joydown,joyup,joyfire};
+      else
+        joystick2[4:0] <= joysplitter ? {joyfire,joyup,joydown,joyright,joyleft} : 5'h1f;
+
+      joytoggle <= !joytoggle;
+    end
+    
     samcoupe maquina (
         .clk48(clk48),
         .clk24(clk24),
@@ -148,7 +164,9 @@ module tld_sam_v4 (
         .disk_wp(dswitch[7:6]),
         .scanlines_tg(scanlines_tg),
         .scandbl_tg(scandbl_tg),
-        .joystick1({joyleft,joyright,joydown,joyup,joyfire})
+        .joysplitter_tg(joysplitter_tg),
+        .joystick1(joystick1),
+        .joystick2(joystick2)
   );
   
   reg scanlines_inv = 1'b0;
@@ -157,6 +175,8 @@ module tld_sam_v4 (
     scanlines_inv <= ! scanlines_inv;
   always @(posedge scandbl_tg)
     scandbl_inv <= ! scandbl_inv;
+  always @(posedge joysplitter_tg)
+    joysplitter <= ! joysplitter;
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;
 	vga_scandoubler #(.CLKVIDEO(12000)) salida_vga (

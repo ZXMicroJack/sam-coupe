@@ -60,8 +60,9 @@ module samcoupe (
     output wire testled,
     output wire scanlines_tg,
     output wire scandbl_tg,
-    input wire[4:0] joystick1
-    );
+    output wire joysplitter_tg,
+    input wire[4:0] joystick1,
+    input wire[4:0] joystick2);
     
     // ROM memory
     wire [14:0] romaddr;
@@ -229,7 +230,9 @@ module samcoupe (
       .user_nmi(kb_nmi_n),
       .scanlines_tg(scanlines_tg),
       .scandbl_tg(scandbl_tg),
-      .joystick1(~joystick1)
+      .joysplitter_tg(joysplitter_tg),
+      .joystick1(~joystick1),
+      .joystick2(~joystick2)
     );
 
     wire read_port_254 = iorq_n == 1'b0 && rd_n == 1'b0 && cpuaddr[7:0] == 8'hfe;
