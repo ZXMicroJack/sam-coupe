@@ -272,7 +272,7 @@ module tld_sam_v4 (
 
      // tape interface
 //      .ear_in(micout),
-     .ear_out(ear_in_sc),
+//      .ear_out(ear_in_sc),
      .clk390k625(clk390k625),
 
      // disk interface

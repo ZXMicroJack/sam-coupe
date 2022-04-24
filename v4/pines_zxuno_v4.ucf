@@ -98,7 +98,7 @@ NET "joyselect" IOSTANDARD = LVCMOS33 |DRIVE=24 |SLEW = SLOW;
 #Created by Constraints Editor (xc6slx9-tqg144-2) - 2022/04/12
 NET "clk50mhz" TNM_NET = clk50mhz;
 TIMESPEC TS_clk50mhz = PERIOD "clk50mhz" 20 ns HIGH 50%;
-NET "count<0>" TNM_NET = count<0>;
+#NET "count<0>" TNM_NET = count<0>;
 PIN "los_relojes/pll_base_inst.CLKOUT0" TNM = CLK48;
 NET "los_relojes/clk8" TNM_NET = los_relojes/clk8;
 TIMESPEC TS_los_relojes_clk8 = PERIOD "los_relojes/clk8" TS_los_relojes_clkout0 / 6 HIGH 50%;
