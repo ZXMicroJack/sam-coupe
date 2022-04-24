@@ -35,6 +35,17 @@ cracked version.  This may change, the ZIP format probably will not.
 
 To convert disks use Simon Owen's excellent SAMdisk utility available here: https://simonowen.com/samdisk/
 
+2nd drive support
+-----------------
+SAMDOS stores the drive configuration along with the DOS on the disk and inherits the settings from the dos it loads.
+Since not all SAMs had a 2nd drive, then if you boot a SAMDOS that was saved on a machine with only 1 drive, when you
+try to DIR 2, then you will receive the message: "103 No such drive, 0:1".  To get around this, and to enable the
+second drive after booting SAMDOS, you can enable the drive with the simple command:
+- POKE DVAR 2, 208
+
+If you resave the SAMDOS onto the disk, then it will save the setting and next time you boot that disk it will remember
+that you had 2 drives configured.  This shouldn't affect PRODOS (CPM).
+
 Feedback
 --------
 zx.micro.jack@gmail.com
