@@ -54,7 +54,8 @@ module tld_sam_v4 (
     input wire joyleft,
     input wire joyright,
     input wire joyfire,
-    output wire joyselect
+    output wire joyselect,
+    output reg led
     );
 
     // Interface with RAM
@@ -217,7 +218,10 @@ module tld_sam_v4 (
   wire osd_window;
   wire osd_pixel;
   
-
+//   assign led = sd_cs_n ? 1'b0 : 1'b1;
+  always @(posedge clk390k625)
+    led <= sd_cs_n ? 1'b0 : 1'b1;
+    
    CtrlModule MyCtrlModule (
      .clk(clk6),
      .clk26(clk48),
