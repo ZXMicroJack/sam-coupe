@@ -28,7 +28,7 @@ module wd1770(
   output reg[31:0] dsr,
   input wire[31:0] dcr,
   input wire clk,
-  input wire[1:0] drsel,
+  input wire drsel,
   input wire[1:0] drwp,
 
   // interface to cpu
@@ -203,7 +203,7 @@ module wd1770(
           end
           8'b101?????: begin // write sector
             // TODO: assumes 18 sectors / track and 256 bytes per sector;
-            if ((drsel[0] && drwp[1]) || (drsel[1] && drwp[0])) begin
+            if (drwp[drsel]) begin
               disk_wp <= 1'b1;
               state <= IDLE;
             end else begin
@@ -220,7 +220,7 @@ module wd1770(
 // 						drq <= 1'b1; // force SAMDOS to believe disk is formatted
           end
           8'b1111????: begin // write track
-            if ((drsel[0] && drwp[1]) || (drsel[1] && drwp[0])) begin
+            if (drwp[drsel]) begin
               disk_wp <= 1'b1;
               state <= IDLE;
             end else begin
@@ -280,7 +280,7 @@ module wd1770(
           fifo_in_data <= din;
           fifo_in_size <= fifo_in_size + 1;
           if (fifo_in_size == 511) begin
-            if (drsel[0])
+            if (drsel)
               dsr[21:0] <= {6'b100000, 3'b000, side_latched, trk[6:0], sect[4:0]};
             else
               dsr[21:0] <= {6'b010000, 3'b000, side_latched, trk[6:0], sect[4:0]};
@@ -328,7 +328,7 @@ module wd1770(
     if (state == STARTREAD) begin
       state <= READSECT;
       fifo_reset <= 1'b1;
-      if (drsel[0])
+      if (drsel)
         dsr[21:0] <= {6'b000100, 3'b000, side_latched, trk[6:0], sect[4:0]};
       else
         dsr[21:0] <= {6'b000010, 3'b000, side_latched, trk[6:0], sect[4:0]};

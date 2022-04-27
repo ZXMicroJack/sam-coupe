@@ -33,8 +33,8 @@ module diskdrives#(parameter NR_DISK = 2, parameter SHARED_FDC = 0) (
 		.dd0outclk(disk_data_clkout),
 		.dsr(disk_sr),
 		.dcr(disk_cr),
-		.drsel({disk2_n, disk1_n}),
-		.drwp({disk_wp[1], disk_wp[0]}),
+		.drsel(disk1_n),
+		.drwp({disk_wp[0], disk_wp[1]}),
 
 		.clk(clk12),
 
@@ -74,7 +74,7 @@ module diskdrives#(parameter NR_DISK = 2, parameter SHARED_FDC = 0) (
 		.dd0outclk(disk_data_clkout & ~wd1770_switch),
 		.dsr(disk_sr1),
 		.dcr(wd1770_switch ? 32'd0 : disk_cr),
-		.drsel(2'b10),
+		.drsel(1'b1),
 		.drwp({1'b1, disk_wp[0]}),
 
 		.clk(clk12),
@@ -98,7 +98,7 @@ module diskdrives#(parameter NR_DISK = 2, parameter SHARED_FDC = 0) (
 		.dd0outclk(disk_data_clkout & wd1770_switch),
 		.dsr(disk_sr2),
 		.dcr(wd1770_switch ? disk_cr : 32'd0),
-		.drsel(2'b01),
+		.drsel(1'b0),
 		.drwp({disk_wp[1], 1'b0}),
 
 		.clk(clk12),
