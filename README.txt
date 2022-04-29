@@ -9,6 +9,7 @@ Keys
 ----
 - F12 - disk menu
 - F5 - NMI button
+- F1 - toggle joystick splitter setting
 - CTRL-ALT-DEL - reset SAM
 - CTRL-ALT-Backspace - reset to BIOS.
 - SCROLL-LOCK - switch from VGA to RGB and back.
@@ -16,8 +17,8 @@ Keys
 
 Known issues
 ------------
-- Only 1 disk at the moment
 - Only support for .MGT 80 track 10 sector, or CPM 80 track 9 sector format
+- Border effects bad due to memory contention issues.
 
 Links to sites with disk images
 -------------------------------
@@ -60,3 +61,11 @@ release r2
   - Brightness fix seen in POP wall textures
   - Blank first 40 sectors on create disk (effectively format properly - blank SAM disks are truly all zeros)
   
+release r3
+  - Support CPM 720kb disks
+  - Updated SAA1099
+  
+release r4
+  - 2nd drive
+  - joystick splitter
+  - activity LED
