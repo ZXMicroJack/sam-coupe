@@ -1,0 +1,3 @@
+[submodule "zx3/zxtres_wrapper"]
+	path = zx3/zxtres_wrapper
+	url = git@github.com:zxtres/zxtres_wrapper.git
