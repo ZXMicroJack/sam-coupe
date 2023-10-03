@@ -65,6 +65,20 @@ module wd1770(
   parameter SECT = 2'b10;
   parameter DATA = 2'b11;
 
+  localparam CR_ACK = 4;
+  localparam CR_ERR = 3;
+  
+  localparam SR_DRST = 16;
+  localparam SR_RSECT0 = 17;
+  localparam SR_RSECT1 = 18;
+  localparam SR_UNSURE  = 19;
+  localparam SR_WSECT0 = 20;
+  localparam SR_WSECT1 = 21;
+  
+  localparam SR_RSECT0CMD = 6'b000100; // 21->16
+  localparam SR_RSECT1CMD = 6'b000010;
+  localparam SR_WSECT1CMD = 6'b100000;
+  localparam SR_WSECT0CMD = 6'b010000;
 
   localparam IDLE = 0;
   localparam READSECT = 1;
@@ -257,13 +271,15 @@ module wd1770(
           if (fifo_empty) begin
             state <= IDLE;
           end
-          if (!dcr[4]) {dsr[16], dsr[19]} <= 2'b00;
+          // 16 = 23
+          // 
+          if (!dcr[CR_ACK]) {dsr[SR_DRST], dsr[SR_UNSURE]} <= 2'b00;
 
         end else if (state == WRITING) begin
           drq <= fifo_in_size != 512;
 
-        end if (state == WAITEND && !dcr[4]) begin
-          {dsr[16], dsr[19]} <= 2'b00;
+        end if (state == WAITEND && !dcr[CR_ACK]) begin
+          {dsr[SR_DRST], dsr[SR_UNSURE]} <= 2'b00;
           fifo_in_size <= 0;
           state <= IDLE;
         end
@@ -280,10 +296,10 @@ module wd1770(
           fifo_in_data <= din;
           fifo_in_size <= fifo_in_size + 1;
           if (fifo_in_size == 511) begin
-            if (drsel)
-              dsr[21:0] <= {6'b100000, 3'b000, side_latched, trk[6:0], sect[4:0]};
+            if (drsel)            
+              dsr[21:0] <= {SR_WSECT1CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
             else
-              dsr[21:0] <= {6'b010000, 3'b000, side_latched, trk[6:0], sect[4:0]};
+              dsr[21:0] <= {SR_WSECT0CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
             state <= COMMIT;
           end
           drq <= 1'b0;
@@ -309,29 +325,29 @@ module wd1770(
     prev_wr <= wr;
 
     // has finished reading/writing sector, reset read command
-    if (dcr[4] && state == COMMIT) begin // finished command
-      dsr[20] <= 1'b0; // reset sector write command
-      dsr[21] <= 1'b0; // reset sector write command
-      dsr[16] <= 1'b1; // signal ack of ack
-      recnotfound <= dcr[3];
-      state <= dcr[3] ? IDLE : WAITEND;
+    if (dcr[CR_ACK] && state == COMMIT) begin // finished command
+      dsr[SR_WSECT0] <= 1'b0; // reset sector write command
+      dsr[SR_WSECT1] <= 1'b0; // reset sector write command
+      dsr[SR_DRST] <= 1'b1; // signal ack of ack
+      recnotfound <= dcr[CR_ERR];
+      state <= dcr[CR_ERR] ? IDLE : WAITEND;
     end
 
-    if (dcr[4] && state == READSECT) begin // finished command
-      dsr[17] <= 1'b0; // reset sector read command
-      dsr[18] <= 1'b0; // reset sector read command
-      dsr[16] <= 1'b1; // signal ack of ack
-      recnotfound <= dcr[3];
-      state <= dcr[3] ? IDLE : READING;
+    if (dcr[CR_ACK] && state == READSECT) begin // finished command
+      dsr[SR_RSECT0] <= 1'b0; // reset sector read command
+      dsr[SR_RSECT1] <= 1'b0; // reset sector read command
+      dsr[SR_DRST] <= 1'b1; // signal ack of ack
+      recnotfound <= dcr[CR_ERR];
+      state <= dcr[CR_ERR] ? IDLE : READING;
     end
 
     if (state == STARTREAD) begin
       state <= READSECT;
       fifo_reset <= 1'b1;
       if (drsel)
-        dsr[21:0] <= {6'b000100, 3'b000, side_latched, trk[6:0], sect[4:0]};
+        dsr[21:0] <= {SR_RSECT0CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
       else
-        dsr[21:0] <= {6'b000010, 3'b000, side_latched, trk[6:0], sect[4:0]};
+        dsr[21:0] <= {SR_RSECT1CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
     end
 
     if (state == STARTWRITE) begin
