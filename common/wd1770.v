@@ -68,17 +68,17 @@ module wd1770(
   localparam CR_ACK = 4;
   localparam CR_ERR = 3;
   
-  localparam SR_DRST = 16;
-  localparam SR_RSECT0 = 17;
-  localparam SR_RSECT1 = 18;
-  localparam SR_UNSURE  = 19;
-  localparam SR_WSECT0 = 20;
-  localparam SR_WSECT1 = 21;
+  localparam SR_DRST = 23;
+  localparam SR_RSECT0 = 24;
+  localparam SR_RSECT1 = 25;
+  localparam SR_UNSURE  = 31;
+  localparam SR_WSECT0 = 26;
+  localparam SR_WSECT1 = 27;
   
-  localparam SR_RSECT0CMD = 6'b000100; // 21->16
-  localparam SR_RSECT1CMD = 6'b000010;
-  localparam SR_WSECT1CMD = 6'b100000;
-  localparam SR_WSECT0CMD = 6'b010000;
+  localparam SR_RSECT0CMD = 6'b000010; // 28->23
+  localparam SR_RSECT1CMD = 6'b000100;
+  localparam SR_WSECT0CMD = 6'b001000;
+  localparam SR_WSECT1CMD = 6'b010000;
 
   localparam IDLE = 0;
   localparam READSECT = 1;
@@ -116,14 +116,10 @@ module wd1770(
 
   reg fifo_in_write = 1'b0;
   reg[7:0] fifo_in_data = 8'h00;
-  reg writing_sector = 1'b0;
-  reg sector_commit = 1'b0;
 
   reg[9:0] fifo_in_size = 1'b0;
-  reg prev_dsr4 = 1'b0;
   wire fifo_out_empty;
   reg drq = 1'b0;
-//   reg spin_disk = 1'b0;
   reg index = 1'b0;
 
 
@@ -135,8 +131,6 @@ module wd1770(
     .read(dd0outclk),
     .reset(fifo_reset),
     .empty(fifo_out_empty));
-
-//   assign dbg = {dd0inclk, ^dd0in, ^dout};
 
   always @(posedge clk) begin
 		if (spincount[31:0] == 32'd60000000)
@@ -271,15 +265,13 @@ module wd1770(
           if (fifo_empty) begin
             state <= IDLE;
           end
-          // 16 = 23
-          // 
-          if (!dcr[CR_ACK]) {dsr[SR_DRST], dsr[SR_UNSURE]} <= 2'b00;
-
+          if (!dcr[CR_ACK]) dsr[SR_DRST] <= 1'b0;
+          
         end else if (state == WRITING) begin
           drq <= fifo_in_size != 512;
 
         end if (state == WAITEND && !dcr[CR_ACK]) begin
-          {dsr[SR_DRST], dsr[SR_UNSURE]} <= 2'b00;
+          dsr[SR_DRST] <= 1'b0;
           fifo_in_size <= 0;
           state <= IDLE;
         end
@@ -296,10 +288,10 @@ module wd1770(
           fifo_in_data <= din;
           fifo_in_size <= fifo_in_size + 1;
           if (fifo_in_size == 511) begin
-            if (drsel)            
-              dsr[21:0] <= {SR_WSECT1CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
+            if (drsel)
+              dsr[28:0] <= {SR_WSECT1CMD, 7'd0, side_latched, trk[6:0], sect[7:0]};
             else
-              dsr[21:0] <= {SR_WSECT0CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
+              dsr[28:0] <= {SR_WSECT0CMD, 7'd0, side_latched, trk[6:0], sect[7:0]};
             state <= COMMIT;
           end
           drq <= 1'b0;
@@ -345,9 +337,9 @@ module wd1770(
       state <= READSECT;
       fifo_reset <= 1'b1;
       if (drsel)
-        dsr[21:0] <= {SR_RSECT0CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
+        dsr[28:0] <= {SR_RSECT1CMD, 7'd0, side_latched, trk[6:0], sect[7:0]};
       else
-        dsr[21:0] <= {SR_RSECT1CMD, 3'b000, side_latched, trk[6:0], sect[4:0]};
+        dsr[28:0] <= {SR_RSECT0CMD, 7'd0, side_latched, trk[6:0], sect[7:0]};
     end
 
     if (state == STARTWRITE) begin

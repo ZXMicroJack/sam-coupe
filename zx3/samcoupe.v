@@ -54,24 +54,11 @@ module samcoupezx3 (
     output wire sd_clk,
     output wire sd_mosi,
     input wire sd_miso,
-//     input wire joyup,
-//     input wire joydown,
-//     input wire joyleft,
-//     input wire joyright,
-//     input wire joyfire,
-//     output wire joyselect,
     output wire led,
-  input wire joy_data,
-  output wire joy_clk,
-  output wire joy_load_n
+    input wire joy_data,
+    output wire joy_clk,
+    output wire joy_load_n
     );
-
-//     input wire joyup,
-//     input wire joydown,
-//     input wire joyleft,
-//     input wire joyright,
-//     input wire joyfire,
-//     output wire joyselect,
 
     // Interface with RAM
     wire [18:0] sram_addr_from_sam;
@@ -92,13 +79,6 @@ module samcoupezx3 (
     wire [1:0] sam_r, sam_g, sam_b;
     wire sam_bright;
     
-    // memory interface
-//     wire [20:0] sram_addr_tmp;
-//     assign sram_addr[19:0] = sram_addr_tmp[19:0];
-//     assign sram_oe_n = ~sram_we_n;
-//     assign sram_lb_n = 1'b0;
-//     assign sram_ub_n = 1'b1;
-    
 	 // scandoubler
 	 wire hsync_pal, vsync_pal;
     wire [2:0] ri = {sam_r, sam_bright};
@@ -112,25 +92,10 @@ module samcoupezx3 (
   wire[31:0] disk_cr;
   wire disk_data_clkout, disk_data_clkin;
 
-//   wire ear_in_sc; 
-//   wire ear_in = ear_in_sc ^ ear;
-//     
     wire clk24, clk12, clk6, clk8, clk48;
 
     wire scanlines_tg;
     wire scandbl_tg;
-//     wire joysplitter_tg;
-    
-//     reg [7:0] poweron_reset = 8'h00;
-//     reg [1:0] scandoubler_ctrl = 2'b00;
-//     always @(posedge clk6) begin
-//         poweron_reset <= {poweron_reset[6:0], 1'b1};
-//         if (poweron_reset[6] == 1'b0)
-//             scandoubler_ctrl <= sram_data[1:0];
-//     end
-    
-//     assign sram_addr = (poweron_reset[7] == 1'b0)? 21'h008FD5 : {2'b00, sram_addr_from_sam};
-//     assign sram_we_n = (poweron_reset[7] == 1'b0)? 1'b1 : sram_we_n_from_sam;
                        
     relojes los_relojes (
         .CLK_IN1            (clk50mhz),      // IN
@@ -142,26 +107,10 @@ module samcoupezx3 (
         .CLK_OUT5           (clk48)  // un reloj duplicado de 50Mhz
     );
 
-    // select 1 joystick
-//    assign joyselect = joysplitter ? joytoggle : 1'b1;
-//    reg joysplitter = 1'b0;
-//     reg[4:0] joystick1 = 5'h1f;
-//     reg[4:0] joystick2 = 5'h1f;
-//    reg joytoggle = 1'b0;
-    
-//    always @(posedge clk390k625) begin
-//      if (joytoggle)
-//        joystick1[4:0] <= {joyleft,joyright,joydown,joyup,joyfire};
-//      else
-//        joystick2[4:0] <= joysplitter ? {joyfire,joyup,joydown,joyright,joyleft} : 5'h1f;
-
-//      joytoggle <= !joytoggle;
-//    end
-    
     wire joy1up, joy1down, joy1left, joy1right, joy1fire1, joy1fire2, joy1fire3;
     wire joy2up, joy2down, joy2left, joy2right, joy2fire1, joy2fire2, joy2fire3;
-    wire[5:0] joystick1 = {joy1left, joy1right, joy1down, joy1up, (joy1fire1|joy1fire2|joy1fire3)};
-    wire[5:0] joystick2 = {(joy2fire1|joy2fire2|joy2fire3), joy2up, joy2down, joy2right, joy2left};
+    wire[5:0] joystick1 = {joy1left, joy1right, joy1down, joy1up, (joy1fire1&joy1fire2&joy1fire3)};
+    wire[5:0] joystick2 = {(joy2fire1&joy2fire2&joy2fire3), joy2up, joy2down, joy2right, joy2left};
 
     wire[8:0] audio_out_left;
     wire[8:0] audio_out_right;
@@ -195,7 +144,6 @@ module samcoupezx3 (
         .mouseclk(mouseclk),
         // SRAM external interface
         .sram_addr(sram_addr_from_sam),
-//         .sram_data(sram_data),
         .sram_data_from_chip(sram_data_from_chip),
         .sram_data_to_chip(sram_data_to_chip),
         .sram_we_n(sram_we_n_from_sam),
@@ -220,8 +168,6 @@ module samcoupezx3 (
     scanlines_inv <= ! scanlines_inv;
   always @(posedge scandbl_tg)
     scandbl_inv <= ! scandbl_inv;
-//  always @(posedge joysplitter_tg)
-//    joysplitter <= ! joysplitter;
 	 
 	wire[7:0] vga_red_o, vga_green_o, vga_blue_o;
   wire config_vga_on;
@@ -245,49 +191,13 @@ module samcoupezx3 (
 
 
    wire host_divert_keyboard;
-
-//    wire hyper_loading = 1'b0;
-//    wire [7:0] tape_data;
-//    reg tape_hreq = 1'b0;
-//    reg tape_hack = 1'b0;
-//    wire tape_busy;
-//    wire tape_ack;
-
-//    wire hyperload_fifo_empty;
-//    reg hyperload_fifo_rd;
-//    wire[7:0] hyperload_fifo_data;
-//    wire hyperload_read_data;
-//    wire hyperload_fifo_full;
-// 
-//    reg[31:0] count;
-//    always @(posedge clk48)
-//      count <= count + 1;
-// 
-//    wire clk390k625 = count[6];
-//    wire tape_dclk;
-//    wire tape_reset;
    wire[15:0] dswitch;
-
    wire host_divert_sdcard;
 
-//    fifo #(.RAM_SIZE(512), .ADDRESS_WIDTH(9)) hyperload_fifo_inst(
-//      .q(hyperload_fifo_data[7:0]),
-//      .d(tape_data[7:0]),
-//      .clk(clk48),
-//      .write(tape_dclk),
-//      .reset(tape_reset),
-// 
-//      .read(hyperload_fifo_rd),
-//      .empty(hyperload_fifo_empty),
-//      .full(hyperload_fifo_full)
-//      );
-// 
   wire osd_window;
   wire osd_pixel;
   
    assign led = sd_cs_n ? 1'b0 : 1'b1;
-//  always @(posedge clk390k625)
-//    led <= sd_cs_n ? 1'b0 : 1'b1;
     
    CtrlModule MyCtrlModule (
      .clk(clk6),
@@ -316,9 +226,6 @@ module samcoupezx3 (
      //-- Control signals
      .host_divert_keyboard(host_divert_keyboard),
      .host_divert_sdcard(host_divert_sdcard),
-
-     // tape interface
-//     .clk390k625(clk390k625),
 
      // disk interface
      .disk_data_in(disk_data_out0),

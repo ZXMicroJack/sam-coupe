@@ -9,7 +9,7 @@ Keys
 ----
 - F12 - disk menu
 - F5 - NMI button
-- F1 - toggle joystick splitter setting
+- F1 - toggle joystick splitter setting (only ZXUno)
 - CTRL-ALT-DEL - reset SAM
 - CTRL-ALT-Backspace - reset to BIOS.
 - SCROLL-LOCK - switch from VGA to RGB and back.
@@ -69,3 +69,7 @@ release r4
   - 2nd drive
   - joystick splitter
   - activity LED
+
+release r5 - zxtres only
+  - ZXTres port
+  
