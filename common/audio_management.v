@@ -23,6 +23,7 @@
 `define MSBI 8 // Most significant Bit of DAC input
 
 //This is a Delta-Sigma Digital to Analog Converter
+`ifndef ZXTRES
 module dac (DACout, DACin, Clk, Reset);
 	output DACout; // This is the average output that feeds low pass filter
 	input [`MSBI:0] DACin; // DAC input (excess 2**MSBI)
@@ -52,6 +53,7 @@ module dac (DACout, DACin, Clk, Reset);
 		end
 	end
 endmodule
+`endif
 
 module mixer (
 	input wire clk,
@@ -61,8 +63,13 @@ module mixer (
 	input wire spk,
 	input wire [7:0] saa_left,
 	input wire [7:0] saa_right,
+`ifndef ZXTRES
 	output wire audio_left,
-    output wire audio_right
+  output wire audio_right
+`else
+  output wire[8:0] audio_left,
+  output wire[8:0] audio_right
+`endif
 	);
 
     reg [6:0] beeper;
@@ -85,7 +92,8 @@ module mixer (
 		sample_r <= next_sample_r;
     end
 
-	dac audio_dac_left (
+`ifndef ZXTRES
+  dac audio_dac_left (
 		.DACout(audio_left),
 		.DACin(sample_l),
 		.Clk(clk),
@@ -98,5 +106,8 @@ module mixer (
 		.Clk(clk),
 		.Reset(~rst_n)
 		);
-        
+`else
+  assign audio_left[8:0] = sample_l[8:0];
+  assign audio_right[8:0] = sample_r[8:0];
+`endif
 endmodule

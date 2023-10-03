@@ -32,10 +32,21 @@ module ram_dual_port_turnos (
     // Actual interface with SRAM
     output reg [18:0] sram_a,
     output reg sram_we_n,
+`ifdef ZXTRES
+    input wire [7:0] sram_data_from_chip,
+    output wire [7:0] sram_data_to_chip
+`else
     inout wire [7:0] sram_d
+`endif
     );
     
-    assign sram_d = (cpu_we_n == 1'b0 && whichturn == 1'b0)? data_from_cpu : 8'hZZ;    
+`ifdef ZXTRES
+    assign sram_data_to_chip[7:0] = data_from_cpu[7:0];
+    wire[7:0] sram_d = sram_data_from_chip[7:0];
+`else
+    assign sram_d = (cpu_we_n == 1'b0 && whichturn == 1'b0)? data_from_cpu : 8'hZZ;
+`endif
+
     always @* begin
         data_to_cpu = 8'hFF;
         data_to_asic = 8'hFF;

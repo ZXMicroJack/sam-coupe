@@ -36,8 +36,13 @@ module samcoupe (
     output wire vsync_pal,
     // Audio output
     input wire ear,
+`ifdef ZXTRES
+    output wire[8:0] audio_out_left,
+    output wire[8:0] audio_out_right,
+`else
     output wire audio_out_left,
     output wire audio_out_right,
+`endif
     // PS/2 keyoard interface
     input wire clkps2,
     input wire dataps2,
@@ -46,7 +51,12 @@ module samcoupe (
     inout wire mouseclk,
     // SRAM interface
     output wire [18:0] sram_addr,
+`ifdef ZXTRES
+    input wire [7:0] sram_data_from_chip,
+    output wire [7:0] sram_data_to_chip,
+`else
     inout wire [7:0] sram_data,
+`endif
     output wire sram_we_n,
     output wire REBOOT,
 
@@ -82,6 +92,10 @@ module samcoupe (
     wire kb_nmi_n;
     wire kb_rst_n;
     wire kb_mrst_n;
+
+`ifdef ZXTRES
+    assign REBOOT = ~kb_mrst_n;
+`endif
     wire rdmsel;
     assign kbrows = {rdmsel, cpuaddr[15:8]};
     
@@ -201,8 +215,13 @@ module samcoupe (
         .data_to_cpu(data_from_ram),
         // Actual interface with SRAM
         .sram_a(sram_addr),
-        .sram_we_n(sram_we_n),
-        .sram_d(sram_data)
+`ifdef ZXTRES
+        .sram_data_from_chip(sram_data_from_chip),
+        .sram_data_to_chip(sram_data_to_chip),
+`else
+        .sram_d(sram_data),
+`endif
+        .sram_we_n(sram_we_n)
     );
 
     wire [7:0] kbcolumns_k;
@@ -294,8 +313,10 @@ module samcoupe (
 			.clk24(clk24)
 		);
 		
+`ifndef ZXTRES
     multiboot back_to_bios (
         .clk_icap(clk24),   // WARNING: this clock must not be greater than 20MHz (50ns period)
         .mrst_n(kb_mrst_n)
     );
+`endif
 endmodule

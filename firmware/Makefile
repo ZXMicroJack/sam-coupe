@@ -34,7 +34,7 @@ HW_OBJ = $(COMMON_OBJ) $(patsubst $(SRCDIR)/%.c,$(BUILD_DIR)/%.hwo,$(HW_SRC))
 # Regular C files
 
 MAIN_PRJ = CtrlROM
-MAIN_SRC_T = main.c interrupts.c keyboard.c ps2.c menu.c spi.c minfat.c swap.c fileselector.c storage.c tape.c disk.c misc.c uart.c machinemenu.c
+MAIN_SRC_T = main.c interrupts.c keyboard.c ps2.c menu.c spi.c minfat.c swap.c fileselector.c storage.c tape.c disk.c misc.c uart.c machinemenu.c diskecpc.c diskraw.c
 MAIN_SRC = $(patsubst %.c,$(SRCDIR)/%.c,$(MAIN_SRC_T))
 MAIN_OBJ = $(HW_OBJ) $(patsubst $(SRCDIR)/%.c,$(BUILD_DIR)/%.o,$(MAIN_SRC))
 
@@ -52,7 +52,7 @@ HWZPUOPTS= -mno-poppcrel -mno-pushspadd -mno-callpcrel -mno-neg -mno-div -mno-mo
 
 #DEBUG = -g
 
-FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DNR_DISKS=2 -DNO_MACHINE_MENU -DBLANK_FIRST_SECTORS=40
+FWOPTS = -DSAMCOUPE -DBLOCK_SIZE=512 -DNR_DISKS=2 -DNO_MACHINE_MENU -DBLANK_FIRST_SECTORS=40 -DINCLUDE_ECPC -DDISABLE_TAPE
 
 COMMON_DIR = $(SRCDIR)
 CFLAGS  = -I. -I$(COMMON_DIR)/ ${DEBUG} -c -Os $(ZPUOPTS) -ffunction-sections -fdata-sections $(FWOPTS)
