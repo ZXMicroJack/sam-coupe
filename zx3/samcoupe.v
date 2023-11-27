@@ -55,10 +55,17 @@ module samcoupezx3 (
     output wire sd_mosi,
     input wire sd_miso,
     output wire led,
+    input wire xjoy_data,
+    output wire xjoy_clk,
+    output wire xjoy_load_n,
     input wire joy_data,
     output wire joy_clk,
     output wire joy_load_n
     );
+
+    // JAMMA interface
+    assign xjoy_clk = joy_clk;
+    assign xjoy_load_n = joy_load_n;
 
     // Interface with RAM
     wire [18:0] sram_addr_from_sam;
@@ -291,7 +298,8 @@ module samcoupezx3 (
   
   joydecoder decodificador_joysticks (
     .clk(clk24),
-    .joy_data(joy_data),
+    .joy_data(joy_data & ~xjoy_data),
+    //.joy_data(joy_data),
     .joy_latch_megadrive(1'b1),
     .joy_clk(joy_clk),
     .joy_load_n(joy_load_n),
